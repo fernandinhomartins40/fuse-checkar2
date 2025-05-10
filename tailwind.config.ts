@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -25,16 +26,24 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					DEFAULT: '#0F3460',
+					foreground: '#FFFFFF',
 				},
 				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
+					DEFAULT: '#FF5722',
+					foreground: '#FFFFFF',
 				},
-				destructive: {
-					DEFAULT: 'hsl(var(--destructive))',
-					foreground: 'hsl(var(--destructive-foreground))'
+				success: {
+					DEFAULT: '#4CAF50',
+					foreground: '#FFFFFF',
+				},
+				warning: {
+					DEFAULT: '#FFC107',
+					foreground: '#000000',
+				},
+				danger: {
+					DEFAULT: '#F44336',
+					foreground: '#FFFFFF',
 				},
 				muted: {
 					DEFAULT: 'hsl(var(--muted))',
@@ -52,21 +61,17 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				sidebar: {
-					DEFAULT: 'hsl(var(--sidebar-background))',
-					foreground: 'hsl(var(--sidebar-foreground))',
-					primary: 'hsl(var(--sidebar-primary))',
-					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-					accent: 'hsl(var(--sidebar-accent))',
-					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-					border: 'hsl(var(--sidebar-border))',
-					ring: 'hsl(var(--sidebar-ring))'
-				}
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
+			},
+			fontFamily: {
+				sans: ['Open Sans', 'ui-sans-serif', 'system-ui'],
+				title: ['Lato', 'ui-sans-serif', 'system-ui'],
+				body: ['Open Sans', 'ui-sans-serif', 'system-ui'],
+				inter: ['Inter', 'sans-serif'],
 			},
 			keyframes: {
 				'accordion-down': {
