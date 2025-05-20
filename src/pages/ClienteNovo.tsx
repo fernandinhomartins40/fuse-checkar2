@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Header from '../components/Header';
@@ -10,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { useClientesData } from '../hooks/useClientesData';
+import { useClientesData, Cliente } from '../hooks/useClientesData';
 import { ArrowLeft } from 'lucide-react';
 
 const clienteSchema = z.object({
@@ -32,6 +31,7 @@ const clienteSchema = z.object({
   observacoes: z.string().optional(),
 });
 
+// Make sure our form values match what's required for a Cliente without the id
 type FormValues = z.infer<typeof clienteSchema>;
 
 const ClienteNovo = () => {
@@ -53,11 +53,14 @@ const ClienteNovo = () => {
 
   const onSubmit = (data: FormValues) => {
     try {
+      // Create a new client with all required fields
       const newCliente = addCliente({
         ...data,
-        dataCadastro: new Date().toISOString().split('T')[0], // Add current date in YYYY-MM-DD format
+        dataCadastro: new Date().toISOString().split('T')[0],
         ativo: true,
-        veiculos: [],
+        veiculos: [], // Empty array, not undefined[]
+        // Make sure observacoes is defined even if empty
+        observacoes: data.observacoes || "",
       });
       
       toast({
