@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 
 // Types for client data
@@ -20,8 +19,11 @@ export type Cliente = {
   dataCadastro: string;
   ativo: boolean;
   veiculos: Veiculo[];
-  observacoes?: string;
+  observacoes: string;
 };
+
+// Type for adding a new client (without ID which is generated)
+export type NovoCliente = Omit<Cliente, 'id'>;
 
 // Mock data
 const clientesMock: Cliente[] = [
@@ -226,14 +228,13 @@ export const useClientesData = () => {
   };
 
   // Add new client
-  const addCliente = (cliente: Omit<Cliente, 'id'>) => {
+  const addCliente = (cliente: NovoCliente): Cliente => {
     const newCliente = {
       ...cliente,
       id: `${Date.now()}`,
-      dataCadastro: new Date().toISOString().split('T')[0],
-    };
+    } as Cliente;
     
-    saveClientes([...clientes, newCliente as Cliente]);
+    saveClientes([...clientes, newCliente]);
     return newCliente;
   };
 
