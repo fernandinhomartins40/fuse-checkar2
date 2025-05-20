@@ -55,6 +55,7 @@ const ClienteNovo = () => {
     try {
       const newCliente = addCliente({
         ...data,
+        dataCadastro: new Date().toISOString().split('T')[0], // Add current date in YYYY-MM-DD format
         ativo: true,
         veiculos: [],
       });
