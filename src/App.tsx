@@ -10,6 +10,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 // Pages
 import Index from "./pages/Index";
 import Clientes from "./pages/Clientes";
+import ClienteNovo from "./pages/ClienteNovo";
+import ClienteDetalhe from "./pages/ClienteDetalhe";
+import ClienteEditar from "./pages/ClienteEditar";
 import Veiculos from "./pages/Veiculos";
 import Revisoes from "./pages/Revisoes";
 import Relatorios from "./pages/Relatorios";
@@ -45,7 +48,26 @@ const App = () => (
             <Route path="/registro" element={<Registro />} />
             
             {/* Mechanic Routes */}
-            <Route path="/clientes" element={<Clientes />} />
+            <Route path="/clientes" element={
+              <ProtectedRoute requiredRole="mecanico">
+                <Clientes />
+              </ProtectedRoute>
+            } />
+            <Route path="/clientes/novo" element={
+              <ProtectedRoute requiredRole="mecanico">
+                <ClienteNovo />
+              </ProtectedRoute>
+            } />
+            <Route path="/clientes/:id" element={
+              <ProtectedRoute requiredRole="mecanico">
+                <ClienteDetalhe />
+              </ProtectedRoute>
+            } />
+            <Route path="/clientes/:id/editar" element={
+              <ProtectedRoute requiredRole="mecanico">
+                <ClienteEditar />
+              </ProtectedRoute>
+            } />
             <Route path="/veiculos" element={<Veiculos />} />
             <Route path="/revisoes" element={<Revisoes />} />
             <Route path="/relatorios" element={<Relatorios />} />
