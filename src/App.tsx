@@ -4,8 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute";
 
 // Pages
 import Index from "./pages/Index";
@@ -17,10 +15,6 @@ import Veiculos from "./pages/Veiculos";
 import Revisoes from "./pages/Revisoes";
 import Relatorios from "./pages/Relatorios";
 import NotFound from "./pages/NotFound";
-
-// Auth Pages
-import Login from "./pages/Login";
-import Registro from "./pages/Registro";
 
 // Cliente Pages
 import ClienteDashboard from "./pages/cliente/Dashboard";
@@ -37,112 +31,36 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/registro" element={<Registro />} />
-            
-            {/* Mechanic Routes */}
-            <Route path="/clientes" element={
-              <ProtectedRoute requiredRole="mecanico">
-                <Clientes />
-              </ProtectedRoute>
-            } />
-            <Route path="/clientes/novo" element={
-              <ProtectedRoute requiredRole="mecanico">
-                <ClienteNovo />
-              </ProtectedRoute>
-            } />
-            <Route path="/clientes/:id" element={
-              <ProtectedRoute requiredRole="mecanico">
-                <ClienteDetalhe />
-              </ProtectedRoute>
-            } />
-            <Route path="/clientes/:id/editar" element={
-              <ProtectedRoute requiredRole="mecanico">
-                <ClienteEditar />
-              </ProtectedRoute>
-            } />
-            <Route path="/veiculos" element={<Veiculos />} />
-            <Route path="/revisoes" element={<Revisoes />} />
-            <Route path="/relatorios" element={<Relatorios />} />
-            
-            {/* Cliente Routes - Protected */}
-            <Route 
-              path="/cliente/dashboard" 
-              element={
-                <ProtectedRoute requiredRole="cliente">
-                  <ClienteDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/cliente/veiculos" 
-              element={
-                <ProtectedRoute requiredRole="cliente">
-                  <ClienteVeiculos />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/cliente/veiculos/:id" 
-              element={
-                <ProtectedRoute requiredRole="cliente">
-                  <ClienteVeiculoDetalhe />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/cliente/revisoes" 
-              element={
-                <ProtectedRoute requiredRole="cliente">
-                  <ClienteRevisoes />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/cliente/revisoes/:id" 
-              element={
-                <ProtectedRoute requiredRole="cliente">
-                  <ClienteRevisaoDetalhe />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/cliente/recomendacoes" 
-              element={
-                <ProtectedRoute requiredRole="cliente">
-                  <ClienteRecomendacoes />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/cliente/recomendacoes/:id" 
-              element={
-                <ProtectedRoute requiredRole="cliente">
-                  <ClienteRecomendacaoDetalhe />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/cliente/perfil" 
-              element={
-                <ProtectedRoute requiredRole="cliente">
-                  <ClientePerfil />
-                </ProtectedRoute>
-              } 
-            />
-            
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Index />} />
+          
+          {/* Mechanic Routes */}
+          <Route path="/clientes" element={<Clientes />} />
+          <Route path="/clientes/novo" element={<ClienteNovo />} />
+          <Route path="/clientes/:id" element={<ClienteDetalhe />} />
+          <Route path="/clientes/:id/editar" element={<ClienteEditar />} />
+          <Route path="/veiculos" element={<Veiculos />} />
+          <Route path="/revisoes" element={<Revisoes />} />
+          <Route path="/relatorios" element={<Relatorios />} />
+          
+          {/* Cliente Routes - Not protected anymore */}
+          <Route path="/cliente/dashboard" element={<ClienteDashboard />} />
+          <Route path="/cliente/veiculos" element={<ClienteVeiculos />} />
+          <Route path="/cliente/veiculos/:id" element={<ClienteVeiculoDetalhe />} />
+          <Route path="/cliente/revisoes" element={<ClienteRevisoes />} />
+          <Route path="/cliente/revisoes/:id" element={<ClienteRevisaoDetalhe />} />
+          <Route path="/cliente/recomendacoes" element={<ClienteRecomendacoes />} />
+          <Route path="/cliente/recomendacoes/:id" element={<ClienteRecomendacaoDetalhe />} />
+          <Route path="/cliente/perfil" element={<ClientePerfil />} />
+          
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );

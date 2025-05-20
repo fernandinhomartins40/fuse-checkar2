@@ -4,44 +4,28 @@ import Header from '../components/Header';
 import Dashboard from '../components/Dashboard';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '../contexts/AuthContext';
 
 const Index = () => {
-  const { isAuthenticated, user } = useAuth();
-  
   return (
     <div id="webcrumbs">
       <div className="w-full lg:w-[1200px] mx-auto bg-gray-50 min-h-screen p-0 font-inter">
         {/* Header */}
         <Header />
 
-        {/* Add client login button */}
+        {/* Add client links */}
         <div className="bg-[#FF5722]/10 p-4">
           <div className="container mx-auto flex flex-col md:flex-row items-center justify-between">
             <div className="mb-4 md:mb-0">
               <h3 className="text-lg font-medium text-gray-800">Área do Cliente</h3>
               <p className="text-sm text-gray-600">Acompanhe suas revisões e recomendações técnicas.</p>
             </div>
-            {isAuthenticated && user?.role === 'cliente' ? (
+            <div className="flex space-x-3">
               <Link to="/cliente/dashboard">
                 <Button className="bg-[#FF5722] hover:bg-[#FF5722]/90">
-                  Acessar Meu Painel
+                  Acessar Painel do Cliente
                 </Button>
               </Link>
-            ) : (
-              <div className="flex space-x-3">
-                <Link to="/login">
-                  <Button variant="outline" className="border-[#FF5722] text-[#FF5722] hover:bg-[#FF5722]/10">
-                    Entrar
-                  </Button>
-                </Link>
-                <Link to="/registro">
-                  <Button className="bg-[#FF5722] hover:bg-[#FF5722]/90">
-                    Criar Conta
-                  </Button>
-                </Link>
-              </div>
-            )}
+            </div>
           </div>
         </div>
 

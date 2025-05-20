@@ -6,20 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Link } from 'react-router-dom';
 import ClientesList from '../components/clientes/ClientesList';
 import { Search } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
 
 const Clientes = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const { isAuthenticated, user } = useAuth();
-  const navigate = useNavigate();
-
-  // Redirect if not authenticated or not a mechanic
-  React.useEffect(() => {
-    if (isAuthenticated && user?.role !== 'mecanico') {
-      navigate('/cliente/dashboard');
-    }
-  }, [isAuthenticated, user, navigate]);
 
   return (
     <div id="webcrumbs">
