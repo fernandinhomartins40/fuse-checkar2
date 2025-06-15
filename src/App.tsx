@@ -13,6 +13,8 @@ import ClienteDetalhe from "./pages/ClienteDetalhe";
 import ClienteEditar from "./pages/ClienteEditar";
 import Veiculos from "./pages/Veiculos";
 import Revisoes from "./pages/Revisoes";
+import RevisaoNova from "./pages/RevisaoNova";
+import RevisaoDetalhe from "./pages/RevisaoDetalhe";
 import Relatorios from "./pages/Relatorios";
 import NotFound from "./pages/NotFound";
 
@@ -45,6 +47,8 @@ const App = () => (
           <Route path="/clientes/:id/editar" element={<ClienteEditar />} />
           <Route path="/veiculos" element={<Veiculos />} />
           <Route path="/revisoes" element={<Revisoes />} />
+          <Route path="/revisoes/nova" element={<RevisaoNova />} />
+          <Route path="/revisoes/:id" element={<RevisaoDetalhe />} />
           <Route path="/relatorios" element={<Relatorios />} />
           
           {/* Cliente Routes - Not protected anymore */}
