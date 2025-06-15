@@ -1,11 +1,14 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import ClienteSidebar from './cliente/ClienteSidebar';
 
 const ClienteHeader: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   
   const handleLogout = () => {
     logout();
@@ -18,71 +21,110 @@ const ClienteHeader: React.FC = () => {
   };
 
   return (
-    <header className="bg-[#0F3460] text-white p-4 shadow-lg">
-      <div className="container mx-auto flex justify-between items-center">
-        <Link to="/cliente/dashboard" className="flex items-center space-x-2">
-          <span className="material-symbols-outlined text-3xl">directions_car</span>
-          <h1 className="text-2xl font-bold tracking-tight">CHECAR</h1>
-        </Link>
-        <div className="flex items-center space-x-6">
-          <nav className="hidden md:flex space-x-6">
-            <Link
-              to="/cliente/dashboard"
-              className="hover:text-[#FF5722] transition-colors duration-200 flex items-center"
-            >
-              <span className="material-symbols-outlined mr-1">dashboard</span>
-              Dashboard
-            </Link>
-            <Link
-              to="/cliente/veiculos"
-              className="hover:text-[#FF5722] transition-colors duration-200 flex items-center"
-            >
-              <span className="material-symbols-outlined mr-1">directions_car</span>
-              Meus Veículos
-            </Link>
-            <Link
-              to="/cliente/revisoes"
-              className="hover:text-[#FF5722] transition-colors duration-200 flex items-center"
-            >
-              <span className="material-symbols-outlined mr-1">fact_check</span>
-              Revisões
-            </Link>
-            <Link
-              to="/cliente/recomendacoes"
-              className="hover:text-[#FF5722] transition-colors duration-200 flex items-center"
-            >
-              <span className="material-symbols-outlined mr-1">build</span>
-              Recomendações
-            </Link>
-          </nav>
-          <div className="flex items-center space-x-4">
-            <button className="hover:bg-[#FF5722] bg-opacity-70 p-2 rounded-full transition-all duration-200 transform hover:scale-105">
-              <span className="material-symbols-outlined">notifications</span>
-            </button>
-            <details className="relative">
-              <summary className="list-none cursor-pointer flex items-center space-x-2">
-                <div className="h-10 w-10 rounded-full bg-[#FF5722] flex items-center justify-center text-white">
-                  {getInitials()}
+    <>
+      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30">
+        <div className="px-4 lg:px-6">
+          <div className="flex items-center justify-between h-16">
+            {/* Menu toggle e logo */}
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden p-2 rounded-md hover:bg-gray-100 transition-colors"
+              >
+                <span className="material-symbols-outlined text-gray-600">menu</span>
+              </button>
+              
+              <Link to="/cliente/dashboard" className="flex items-center space-x-3 lg:hidden">
+                <div className="h-8 w-8 bg-[#0F3460] rounded-lg flex items-center justify-center">
+                  <span className="material-symbols-outlined text-white text-sm">directions_car</span>
                 </div>
-                <span className="hidden md:block">{user?.name || 'Cliente'}</span>
-                <span className="material-symbols-outlined">expand_more</span>
-              </summary>
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                <Link to="/cliente/perfil" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
-                  Meu Perfil
-                </Link>
-                <button 
-                  onClick={handleLogout}
-                  className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
+                <h1 className="text-xl font-bold text-[#0F3460]">CHECAR</h1>
+              </Link>
+            </div>
+
+            {/* Desktop navigation */}
+            <nav className="hidden lg:flex items-center space-x-8">
+              <Link
+                to="/cliente/dashboard"
+                className="flex items-center space-x-2 text-gray-700 hover:text-[#0F3460] transition-colors"
+              >
+                <span className="material-symbols-outlined text-sm">dashboard</span>
+                <span>Dashboard</span>
+              </Link>
+              <Link
+                to="/cliente/veiculos"
+                className="flex items-center space-x-2 text-gray-700 hover:text-[#0F3460] transition-colors"
+              >
+                <span className="material-symbols-outlined text-sm">directions_car</span>
+                <span>Veículos</span>
+              </Link>
+              <Link
+                to="/cliente/revisoes"
+                className="flex items-center space-x-2 text-gray-700 hover:text-[#0F3460] transition-colors"
+              >
+                <span className="material-symbols-outlined text-sm">fact_check</span>
+                <span>Revisões</span>
+              </Link>
+              <Link
+                to="/cliente/recomendacoes"
+                className="flex items-center space-x-2 text-gray-700 hover:text-[#0F3460] transition-colors"
+              >
+                <span className="material-symbols-outlined text-sm">build</span>
+                <span>Recomendações</span>
+              </Link>
+            </nav>
+
+            {/* User menu */}
+            <div className="flex items-center space-x-4">
+              <button className="p-2 rounded-full hover:bg-gray-100 transition-colors relative">
+                <span className="material-symbols-outlined text-gray-600">notifications</span>
+                <span className="absolute top-1 right-1 h-2 w-2 bg-[#FF5722] rounded-full"></span>
+              </button>
+              
+              <div className="relative">
+                <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
                 >
-                  Sair
+                  <div className="h-8 w-8 rounded-full bg-[#FF5722] flex items-center justify-center text-white text-sm font-medium">
+                    {getInitials()}
+                  </div>
+                  <span className="hidden md:block text-gray-700 font-medium">{user?.name || 'Cliente'}</span>
+                  <span className="material-symbols-outlined text-gray-500 text-sm">expand_more</span>
                 </button>
+                
+                {dropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 border border-gray-200">
+                    <Link 
+                      to="/cliente/perfil" 
+                      className="block px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      <span className="material-symbols-outlined text-sm">person</span>
+                      <span>Meu Perfil</span>
+                    </Link>
+                    <hr className="my-1 border-gray-200" />
+                    <button 
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                    >
+                      <span className="material-symbols-outlined text-sm">logout</span>
+                      <span>Sair</span>
+                    </button>
+                  </div>
+                )}
               </div>
-            </details>
+            </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Sidebar para mobile */}
+      <ClienteSidebar 
+        isOpen={sidebarOpen} 
+        onClose={() => setSidebarOpen(false)} 
+      />
+    </>
   );
 };
 

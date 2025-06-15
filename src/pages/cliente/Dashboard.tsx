@@ -1,150 +1,229 @@
 
 import React from 'react';
 import ClienteHeader from '../../components/ClienteHeader';
+import ClienteSidebar from '../../components/cliente/ClienteSidebar';
+import StatsCard from '../../components/cliente/StatsCard';
+import QuickActionCard from '../../components/cliente/QuickActionCard';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
   const { user } = useAuth();
 
+  const recentActivities = [
+    {
+      id: 1,
+      type: 'revisao',
+      veiculo: 'Honda Civic',
+      placa: 'ABC-1234',
+      servico: 'Revisão Completa',
+      data: '15/04/2023',
+      status: 'Concluído'
+    },
+    {
+      id: 2,
+      type: 'revisao',
+      veiculo: 'Jeep Compass',
+      placa: 'DEF-5678',
+      servico: 'Troca de Óleo',
+      data: '20/05/2023',
+      status: 'Concluído'
+    }
+  ];
+
+  const proximasRevisoes = [
+    {
+      id: 1,
+      veiculo: 'Honda Civic',
+      data: '10/06/2023',
+      tipo: 'Revisão Agendada',
+      urgencia: 'normal'
+    },
+    {
+      id: 2,
+      veiculo: 'Jeep Compass',
+      data: '15/08/2023',
+      tipo: 'Revisão Prevista',
+      urgencia: 'baixa'
+    }
+  ];
+
   return (
-    <div id="webcrumbs">
-      <div className="w-full lg:w-[1200px] mx-auto bg-gray-50 min-h-screen p-0 font-inter">
-        <ClienteHeader />
+    <div className="min-h-screen bg-gray-50">
+      <ClienteHeader />
+      
+      <div className="flex">
+        {/* Sidebar para desktop */}
+        <div className="hidden lg:block">
+          <ClienteSidebar isOpen={true} onClose={() => {}} />
+        </div>
         
-        <main className="container mx-auto py-6 px-4">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Meu Dashboard</h2>
-            <p className="text-gray-600">Olá {user?.name}, bem-vindo ao seu painel de controle.</p>
-          </div>
-
-          {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-[#0F3460] hover:shadow-lg transition-shadow duration-300">
-              <div className="flex justify-between">
-                <div>
-                  <p className="text-gray-500 text-sm">Total de Veículos</p>
-                  <h3 className="text-3xl font-bold text-gray-800">2</h3>
-                </div>
-                <div className="h-12 w-12 bg-[#0F3460] bg-opacity-10 rounded-full flex items-center justify-center">
-                  <span className="material-symbols-outlined text-[#0F3460]">directions_car</span>
-                </div>
+        {/* Conteúdo principal */}
+        <main className="flex-1 p-4 lg:p-6 max-w-7xl mx-auto w-full">
+          {/* Hero Section */}
+          <div className="bg-gradient-to-r from-[#0F3460] to-[#1a4b7a] rounded-2xl p-6 lg:p-8 text-white mb-8 shadow-lg">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between">
+              <div>
+                <h1 className="text-2xl lg:text-3xl font-bold mb-2">
+                  Bem-vindo, {user?.name?.split(' ')[0] || 'Cliente'}! 👋
+                </h1>
+                <p className="text-white/90 text-lg">
+                  Acompanhe seus veículos e mantenha-os sempre em perfeito estado.
+                </p>
               </div>
-              <div className="mt-2">
-                <Link to="/cliente/veiculos" className="text-xs text-[#0F3460] flex items-center">
-                  Ver detalhes 
-                  <span className="material-symbols-outlined text-sm ml-1">chevron_right</span>
-                </Link>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-[#FF5722] hover:shadow-lg transition-shadow duration-300">
-              <div className="flex justify-between">
-                <div>
-                  <p className="text-gray-500 text-sm">Revisões Realizadas</p>
-                  <h3 className="text-3xl font-bold text-gray-800">5</h3>
-                </div>
-                <div className="h-12 w-12 bg-[#FF5722] bg-opacity-10 rounded-full flex items-center justify-center">
-                  <span className="material-symbols-outlined text-[#FF5722]">fact_check</span>
-                </div>
-              </div>
-              <div className="mt-2">
-                <Link to="/cliente/revisoes" className="text-xs text-[#FF5722] flex items-center">
-                  Ver histórico
-                  <span className="material-symbols-outlined text-sm ml-1">chevron_right</span>
-                </Link>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500 hover:shadow-lg transition-shadow duration-300">
-              <div className="flex justify-between">
-                <div>
-                  <p className="text-gray-500 text-sm">Recomendações Pendentes</p>
-                  <h3 className="text-3xl font-bold text-gray-800">3</h3>
-                </div>
-                <div className="h-12 w-12 bg-yellow-500 bg-opacity-10 rounded-full flex items-center justify-center">
-                  <span className="material-symbols-outlined text-yellow-500">warning</span>
-                </div>
-              </div>
-              <div className="mt-2">
-                <Link to="/cliente/recomendacoes" className="text-xs text-yellow-600 flex items-center">
-                  <span className="material-symbols-outlined text-sm mr-1">priority_high</span>
-                  1 recomendação crítica
+              <div className="mt-4 lg:mt-0">
+                <Link
+                  to="/cliente/veiculos"
+                  className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 inline-flex items-center space-x-2"
+                >
+                  <span className="material-symbols-outlined">add</span>
+                  <span>Novo Agendamento</span>
                 </Link>
               </div>
             </div>
           </div>
 
-          {/* Vehicles Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Cards de Estatísticas */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <StatsCard
+              title="Total de Veículos"
+              value="2"
+              icon="directions_car"
+              color="blue"
+              linkTo="/cliente/veiculos"
+              linkText="Ver detalhes"
+            />
+            <StatsCard
+              title="Revisões Realizadas"
+              value="5"
+              icon="fact_check"
+              color="orange"
+              linkTo="/cliente/revisoes"
+              linkText="Ver histórico"
+            />
+            <StatsCard
+              title="Recomendações"
+              value="3"
+              icon="warning"
+              color="yellow"
+              linkTo="/cliente/recomendacoes"
+              linkText="1 crítica"
+              subtitle="Pendentes"
+            />
+            <StatsCard
+              title="Economia Total"
+              value="R$ 1.245"
+              icon="savings"
+              color="green"
+              linkText="Detalhes"
+              subtitle="Com manutenção preventiva"
+            />
+          </div>
+
+          {/* Ações Rápidas */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <QuickActionCard
+              title="Agendar Revisão"
+              description="Marque sua próxima revisão"
+              icon="calendar_add_on"
+              linkTo="/cliente/agendar"
+              color="blue"
+            />
+            <QuickActionCard
+              title="Ver Recomendações"
+              description="Confira as pendências"
+              icon="build"
+              linkTo="/cliente/recomendacoes"
+              color="orange"
+            />
+            <QuickActionCard
+              title="Histórico"
+              description="Todas as suas revisões"
+              icon="history"
+              linkTo="/cliente/revisoes"
+              color="purple"
+            />
+            <QuickActionCard
+              title="Suporte"
+              description="Precisa de ajuda?"
+              icon="support_agent"
+              linkTo="/cliente/suporte"
+              color="green"
+            />
+          </div>
+
+          {/* Seção Principal com 2 colunas */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            {/* Meus Veículos */}
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-lg shadow-md">
-                <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-                  <h3 className="text-lg font-semibold">Meus Veículos</h3>
-                  <Link to="/cliente/veiculos" className="text-[#0F3460] hover:text-[#FF5722] transition-colors duration-200">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+                <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+                  <h2 className="text-xl font-semibold text-gray-800">Meus Veículos</h2>
+                  <Link 
+                    to="/cliente/veiculos" 
+                    className="text-[#0F3460] hover:text-[#FF5722] transition-colors duration-200 font-medium"
+                  >
                     Ver todos
                   </Link>
                 </div>
-                <div className="p-4">
+                <div className="p-6">
                   <div className="space-y-4">
-                    <div className="p-4 border border-gray-200 rounded-lg hover:border-[#0F3460] transition-colors duration-200">
-                      <div className="flex justify-between">
+                    {/* Veículo 1 */}
+                    <div className="p-4 border border-gray-200 rounded-xl hover:border-[#0F3460] transition-all duration-200 hover:shadow-sm">
+                      <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
-                          <div className="h-12 w-12 bg-[#0F3460] bg-opacity-10 rounded-full flex items-center justify-center">
+                          <div className="h-12 w-12 bg-[#0F3460]/10 rounded-xl flex items-center justify-center">
                             <span className="material-symbols-outlined text-[#0F3460]">directions_car</span>
                           </div>
                           <div>
-                            <h4 className="font-medium text-gray-800">Honda Civic</h4>
-                            <p className="text-sm text-gray-500">Placa: ABC-1234 • Ano: 2019</p>
+                            <h3 className="font-semibold text-gray-800">Honda Civic</h3>
+                            <p className="text-sm text-gray-500">ABC-1234 • 2019</p>
                           </div>
                         </div>
-                        <div>
-                          <Link 
-                            to="/cliente/veiculos/1" 
-                            className="text-[#0F3460] hover:text-[#FF5722] transition-colors duration-200"
-                          >
-                            <span className="material-symbols-outlined">visibility</span>
-                          </Link>
-                        </div>
+                        <Link 
+                          to="/cliente/veiculos/1" 
+                          className="p-2 text-gray-400 hover:text-[#0F3460] transition-colors duration-200 rounded-lg hover:bg-gray-100"
+                        >
+                          <span className="material-symbols-outlined">arrow_forward</span>
+                        </Link>
                       </div>
-                      <div className="mt-3 pt-3 border-t border-gray-100 text-sm flex justify-between">
-                        <div className="text-gray-500">
+                      <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                        <div className="text-sm text-gray-600">
                           <span className="font-medium">Última revisão:</span> 15/04/2023
                         </div>
-                        <div className="text-yellow-600 flex items-center">
+                        <div className="flex items-center text-yellow-600 text-sm">
                           <span className="material-symbols-outlined text-sm mr-1">warning</span>
-                          1 recomendação pendente
+                          1 recomendação
                         </div>
                       </div>
                     </div>
-                    
-                    <div className="p-4 border border-gray-200 rounded-lg hover:border-[#0F3460] transition-colors duration-200">
-                      <div className="flex justify-between">
+
+                    {/* Veículo 2 */}
+                    <div className="p-4 border border-gray-200 rounded-xl hover:border-[#0F3460] transition-all duration-200 hover:shadow-sm">
+                      <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
-                          <div className="h-12 w-12 bg-[#0F3460] bg-opacity-10 rounded-full flex items-center justify-center">
+                          <div className="h-12 w-12 bg-[#0F3460]/10 rounded-xl flex items-center justify-center">
                             <span className="material-symbols-outlined text-[#0F3460]">directions_car</span>
                           </div>
                           <div>
-                            <h4 className="font-medium text-gray-800">Jeep Compass</h4>
-                            <p className="text-sm text-gray-500">Placa: DEF-5678 • Ano: 2022</p>
+                            <h3 className="font-semibold text-gray-800">Jeep Compass</h3>
+                            <p className="text-sm text-gray-500">DEF-5678 • 2022</p>
                           </div>
                         </div>
-                        <div>
-                          <Link 
-                            to="/cliente/veiculos/2" 
-                            className="text-[#0F3460] hover:text-[#FF5722] transition-colors duration-200"
-                          >
-                            <span className="material-symbols-outlined">visibility</span>
-                          </Link>
-                        </div>
+                        <Link 
+                          to="/cliente/veiculos/2" 
+                          className="p-2 text-gray-400 hover:text-[#0F3460] transition-colors duration-200 rounded-lg hover:bg-gray-100"
+                        >
+                          <span className="material-symbols-outlined">arrow_forward</span>
+                        </Link>
                       </div>
-                      <div className="mt-3 pt-3 border-t border-gray-100 text-sm flex justify-between">
-                        <div className="text-gray-500">
+                      <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                        <div className="text-sm text-gray-600">
                           <span className="font-medium">Última revisão:</span> 20/05/2023
                         </div>
-                        <div className="text-green-600 flex items-center">
+                        <div className="flex items-center text-green-600 text-sm">
                           <span className="material-symbols-outlined text-sm mr-1">check_circle</span>
-                          Sem pendências
+                          Em dia
                         </div>
                       </div>
                     </div>
@@ -153,136 +232,95 @@ const Dashboard = () => {
               </div>
             </div>
 
+            {/* Próximas Revisões */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-lg shadow-md h-full">
-                <div className="p-4 border-b border-gray-200">
-                  <h3 className="text-lg font-semibold">Próximas Revisões</h3>
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full">
+                <div className="p-6 border-b border-gray-200">
+                  <h2 className="text-xl font-semibold text-gray-800">Próximas Revisões</h2>
                 </div>
-                <div className="p-4">
-                  <ul className="space-y-3">
-                    <li className="flex items-start p-3 bg-blue-50 rounded-md border-l-4 border-blue-500">
-                      <span className="material-symbols-outlined text-blue-500 mr-2">calendar_today</span>
-                      <div>
-                        <p className="text-sm font-medium text-gray-800">Honda Civic</p>
-                        <p className="text-xs text-gray-600">Revisão Agendada: 10/06/2023</p>
+                <div className="p-6">
+                  <div className="space-y-4">
+                    {proximasRevisoes.map(revisao => (
+                      <div 
+                        key={revisao.id}
+                        className={`p-4 rounded-xl border-l-4 ${
+                          revisao.urgencia === 'normal' ? 'bg-blue-50 border-blue-500' : 'bg-yellow-50 border-yellow-500'
+                        }`}
+                      >
+                        <div className="flex items-start space-x-3">
+                          <span className={`material-symbols-outlined text-xl ${
+                            revisao.urgencia === 'normal' ? 'text-blue-500' : 'text-yellow-500'
+                          }`}>
+                            {revisao.urgencia === 'normal' ? 'calendar_today' : 'schedule'}
+                          </span>
+                          <div className="flex-1">
+                            <p className="font-medium text-gray-800">{revisao.veiculo}</p>
+                            <p className="text-sm text-gray-600">{revisao.tipo}</p>
+                            <p className="text-sm text-gray-500">{revisao.data}</p>
+                          </div>
+                        </div>
                       </div>
-                    </li>
-                    <li className="flex items-start p-3 bg-yellow-50 rounded-md border-l-4 border-yellow-500">
-                      <span className="material-symbols-outlined text-yellow-500 mr-2">schedule</span>
-                      <div>
-                        <p className="text-sm font-medium text-gray-800">Jeep Compass</p>
-                        <p className="text-xs text-gray-600">Revisão Prevista: 15/08/2023</p>
-                      </div>
-                    </li>
-                  </ul>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Recent Activities */}
-          <div className="bg-white rounded-lg shadow-md mb-8">
-            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-              <h3 className="text-lg font-semibold">Histórico de Revisões Recentes</h3>
-              <Link to="/cliente/revisoes" className="text-[#0F3460] hover:text-[#FF5722] transition-colors duration-200">
+          {/* Histórico Recente */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
+            <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-gray-800">Atividades Recentes</h2>
+              <Link 
+                to="/cliente/revisoes" 
+                className="text-[#0F3460] hover:text-[#FF5722] transition-colors duration-200 font-medium"
+              >
                 Ver todas
               </Link>
             </div>
-            <div className="p-4 overflow-x-auto">
-              <table className="w-full min-w-full">
-                <thead>
-                  <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <th className="p-2">Veículo</th>
-                    <th className="p-2">Serviço</th>
-                    <th className="p-2">Data</th>
-                    <th className="p-2">Status</th>
-                    <th className="p-2">Ações</th>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="text-left py-3 px-6 font-medium text-gray-700 text-sm">Veículo</th>
+                    <th className="text-left py-3 px-6 font-medium text-gray-700 text-sm">Serviço</th>
+                    <th className="text-left py-3 px-6 font-medium text-gray-700 text-sm">Data</th>
+                    <th className="text-left py-3 px-6 font-medium text-gray-700 text-sm">Status</th>
+                    <th className="text-left py-3 px-6 font-medium text-gray-700 text-sm">Ações</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
-                  <tr className="hover:bg-gray-50 transition-colors duration-150">
-                    <td className="p-2">
-                      <div className="flex items-center">
+                <tbody>
+                  {recentActivities.map(activity => (
+                    <tr key={activity.id} className="border-t border-gray-200 hover:bg-gray-50 transition-colors duration-150">
+                      <td className="py-4 px-6">
                         <div>
-                          <p className="text-sm font-medium text-gray-900">Honda Civic</p>
-                          <p className="text-xs text-gray-500">ABC-1234</p>
+                          <p className="font-medium text-gray-800">{activity.veiculo}</p>
+                          <p className="text-sm text-gray-500">{activity.placa}</p>
                         </div>
-                      </div>
-                    </td>
-                    <td className="p-2 text-sm">Revisão Completa</td>
-                    <td className="p-2 text-sm text-gray-500">15/04/2023</td>
-                    <td className="p-2">
-                      <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
-                        Concluído
-                      </span>
-                    </td>
-                    <td className="p-2">
-                      <div className="flex space-x-2">
-                        <Link 
-                          to="/cliente/revisoes/1" 
-                          className="p-1 text-gray-500 hover:text-[#0F3460] transition-colors duration-200"
-                        >
-                          <span className="material-symbols-outlined text-sm">
-                            visibility
-                          </span>
-                        </Link>
-                        <Link 
-                          to="/cliente/recomendacoes/1" 
-                          className="p-1 text-gray-500 hover:text-[#FF5722] transition-colors duration-200"
-                        >
-                          <span className="material-symbols-outlined text-sm">
-                            build
-                          </span>
-                        </Link>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-gray-50 transition-colors duration-150">
-                    <td className="p-2">
-                      <div className="flex items-center">
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">Jeep Compass</p>
-                          <p className="text-xs text-gray-500">DEF-5678</p>
+                      </td>
+                      <td className="py-4 px-6 text-gray-700">{activity.servico}</td>
+                      <td className="py-4 px-6 text-gray-500">{activity.data}</td>
+                      <td className="py-4 px-6">
+                        <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-800 font-medium">
+                          {activity.status}
+                        </span>
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="flex space-x-2">
+                          <Link 
+                            to={`/cliente/revisoes/${activity.id}`} 
+                            className="p-2 text-gray-400 hover:text-[#0F3460] transition-colors duration-200 rounded-lg hover:bg-gray-100"
+                          >
+                            <span className="material-symbols-outlined text-sm">visibility</span>
+                          </Link>
                         </div>
-                      </div>
-                    </td>
-                    <td className="p-2 text-sm">Troca de Óleo</td>
-                    <td className="p-2 text-sm text-gray-500">20/05/2023</td>
-                    <td className="p-2">
-                      <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
-                        Concluído
-                      </span>
-                    </td>
-                    <td className="p-2">
-                      <div className="flex space-x-2">
-                        <Link 
-                          to="/cliente/revisoes/2" 
-                          className="p-1 text-gray-500 hover:text-[#0F3460] transition-colors duration-200"
-                        >
-                          <span className="material-symbols-outlined text-sm">
-                            visibility
-                          </span>
-                        </Link>
-                        <Link 
-                          to="/cliente/recomendacoes/2" 
-                          className="p-1 text-gray-500 hover:text-[#FF5722] transition-colors duration-200"
-                        >
-                          <span className="material-symbols-outlined text-sm">
-                            build
-                          </span>
-                        </Link>
-                      </div>
-                    </td>
-                  </tr>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
           </div>
-          
-          {/* Footer */}
-          <footer className="mt-8 text-center py-4 border-t border-gray-200">
-            <p className="text-sm text-gray-600">© 2023 CHECAR - Sistema de Revisão para Auto Centers</p>
-          </footer>
         </main>
       </div>
     </div>
