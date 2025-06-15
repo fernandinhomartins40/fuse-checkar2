@@ -24,8 +24,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Check if user is already logged in on component mount
     const clienteAuth = localStorage.getItem('clienteAuth');
+    const adminAuth = localStorage.getItem('adminAuth');
+    
     if (clienteAuth) {
       const authData = JSON.parse(clienteAuth);
+      if (authData.isAuthenticated && authData.user) {
+        setUser(authData.user);
+        setIsAuthenticated(true);
+      }
+    } else if (adminAuth) {
+      const authData = JSON.parse(adminAuth);
       if (authData.isAuthenticated && authData.user) {
         setUser(authData.user);
         setIsAuthenticated(true);
@@ -36,7 +44,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = (userData: User) => {
     setUser(userData);
     setIsAuthenticated(true);
-    localStorage.setItem('clienteAuth', JSON.stringify({
+    
+    const authKey = userData.role === 'cliente' ? 'clienteAuth' : 'adminAuth';
+    localStorage.setItem(authKey, JSON.stringify({
       isAuthenticated: true,
       user: userData
     }));
@@ -46,6 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     setIsAuthenticated(false);
     localStorage.removeItem('clienteAuth');
+    localStorage.removeItem('adminAuth');
   };
 
   return (

@@ -7,7 +7,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 
 // Pages
-import Index from "./pages/Index";
+import Landing from "./pages/Landing";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
+import Login from "./pages/Login";
 import Clientes from "./pages/Clientes";
 import ClienteNovo from "./pages/ClienteNovo";
 import ClienteDetalhe from "./pages/ClienteDetalhe";
@@ -44,10 +47,15 @@ const App = () => (
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Index />} />
+            {/* Landing Page */}
+            <Route path="/" element={<Landing />} />
             
-            {/* Mechanic Routes */}
+            {/* Authentication Routes */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/login" element={<Login />} />
+            
+            {/* Admin/Mechanic Routes */}
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/clientes" element={<Clientes />} />
             <Route path="/clientes/novo" element={<ClienteNovo />} />
             <Route path="/clientes/:id" element={<ClienteDetalhe />} />
@@ -61,7 +69,7 @@ const App = () => (
             <Route path="/revisoes/:id" element={<RevisaoDetalhe />} />
             <Route path="/relatorios" element={<Relatorios />} />
             
-            {/* Cliente Routes - Not protected anymore */}
+            {/* Cliente Routes */}
             <Route path="/cliente/dashboard" element={<ClienteDashboard />} />
             <Route path="/cliente/veiculos" element={<ClienteVeiculos />} />
             <Route path="/cliente/veiculos/:id" element={<ClienteVeiculoDetalhe />} />
@@ -71,7 +79,7 @@ const App = () => (
             <Route path="/cliente/recomendacoes/:id" element={<ClienteRecomendacaoDetalhe />} />
             <Route path="/cliente/perfil" element={<ClientePerfil />} />
             
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
