@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 
 // Types for client data
@@ -71,7 +72,8 @@ const clientesMock: Cliente[] = [
         ano: 2022,
         cor: 'Branco'
       }
-    ]
+    ],
+    observacoes: ''
   },
   {
     id: '3',
@@ -82,7 +84,8 @@ const clientesMock: Cliente[] = [
     endereco: 'Rua Oscar Freire, 200, São Paulo - SP',
     dataCadastro: '2023-03-10',
     ativo: false,
-    veiculos: []
+    veiculos: [],
+    observacoes: ''
   },
   {
     id: '4',
@@ -101,7 +104,8 @@ const clientesMock: Cliente[] = [
         ano: 2022,
         cor: 'Vermelho'
       }
-    ]
+    ],
+    observacoes: ''
   },
   {
     id: '5',
@@ -120,7 +124,8 @@ const clientesMock: Cliente[] = [
         ano: 2018,
         cor: 'Azul'
       }
-    ]
+    ],
+    observacoes: ''
   },
   {
     id: '6',
@@ -139,7 +144,8 @@ const clientesMock: Cliente[] = [
         ano: 2020,
         cor: 'Prata'
       }
-    ]
+    ],
+    observacoes: ''
   },
   {
     id: '7',
@@ -178,7 +184,8 @@ const clientesMock: Cliente[] = [
         ano: 2022,
         cor: 'Preto'
       }
-    ]
+    ],
+    observacoes: ''
   },
   {
     id: '9',
@@ -197,7 +204,8 @@ const clientesMock: Cliente[] = [
         ano: 2021,
         cor: 'Vermelho'
       }
-    ]
+    ],
+    observacoes: ''
   }
 ];
 

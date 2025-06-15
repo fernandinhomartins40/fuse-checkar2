@@ -16,11 +16,14 @@ const ClienteNovo = () => {
     try {
       // Create a new client with all required fields
       const newCliente = addCliente({
-        ...data,
+        nome: data.nome,
+        email: data.email,
+        telefone: data.telefone,
+        cpf: data.cpf,
+        endereco: data.endereco,
         dataCadastro: new Date().toISOString().split('T')[0],
         ativo: true,
         veiculos: [], 
-        // Make sure observacoes is defined even if empty
         observacoes: data.observacoes || "",
       });
       
