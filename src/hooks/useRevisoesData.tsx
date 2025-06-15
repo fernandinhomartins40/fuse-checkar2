@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Revisao, Cliente, Veiculo } from '../types/revisoes';
 import { checklistTemplate } from '../data/checklistTemplate';
@@ -43,6 +42,39 @@ const mockVeiculos: Veiculo[] = [
     chassi: '1C4NJDEB2KD123456',
     cor: 'Branco',
     quilometragem: 18000
+  },
+  {
+    id: '101',
+    clienteId: '1',
+    marca: 'Honda',
+    modelo: 'Civic',
+    ano: 2019,
+    placa: 'ABC-1234',
+    chassi: '1HGBH41JXMN109187',
+    cor: 'Prata',
+    quilometragem: 45000
+  },
+  {
+    id: '102',
+    clienteId: '1',
+    marca: 'Toyota',
+    modelo: 'Corolla',
+    ano: 2021,
+    placa: 'DEF-5678',
+    chassi: '1HGBH41JXMN109188',
+    cor: 'Preto',
+    quilometragem: 25000
+  },
+  {
+    id: '103',
+    clienteId: '2',
+    marca: 'Jeep',
+    modelo: 'Compass',
+    ano: 2022,
+    placa: 'GHI-9012',
+    chassi: '1HGBH41JXMN109189',
+    cor: 'Branco',
+    quilometragem: 12000
   }
 ];
 
@@ -127,6 +159,10 @@ export const useRevisoesData = () => {
     return revisoes.filter(revisao => revisao.veiculoId === veiculoId);
   };
 
+  const getVeiculosByClienteId = (clienteId: string) => {
+    return veiculos.filter(veiculo => veiculo.clienteId === clienteId);
+  };
+
   return {
     revisoes,
     clientes,
@@ -138,5 +174,6 @@ export const useRevisoesData = () => {
     getVeiculoById,
     getRevisoesByCliente,
     getRevisoesByVeiculo,
+    getVeiculosByClienteId,
   };
 };

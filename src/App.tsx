@@ -28,6 +28,11 @@ import ClienteRecomendacoes from "./pages/cliente/Recomendacoes";
 import ClienteRecomendacaoDetalhe from "./pages/cliente/RecomendacaoDetalhe";
 import ClientePerfil from "./pages/cliente/Perfil";
 
+// Veiculo Pages
+import VeiculoNovo from "./pages/VeiculoNovo";
+import VeiculoDetalhe from "./pages/VeiculoDetalhe";
+import VeiculoEditar from "./pages/VeiculoEditar";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -46,6 +51,9 @@ const App = () => (
           <Route path="/clientes/:id" element={<ClienteDetalhe />} />
           <Route path="/clientes/:id/editar" element={<ClienteEditar />} />
           <Route path="/veiculos" element={<Veiculos />} />
+          <Route path="/veiculos/novo" element={<VeiculoNovo />} />
+          <Route path="/veiculos/:id" element={<VeiculoDetalhe />} />
+          <Route path="/veiculos/:id/editar" element={<VeiculoEditar />} />
           <Route path="/revisoes" element={<Revisoes />} />
           <Route path="/revisoes/nova" element={<RevisaoNova />} />
           <Route path="/revisoes/:id" element={<RevisaoDetalhe />} />
