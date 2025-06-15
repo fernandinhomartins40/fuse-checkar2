@@ -1,163 +1,138 @@
 
-import { useState, useMemo } from 'react';
-import { useRevisoesData } from './useRevisoesData';
+import { useState, useEffect } from 'react';
 
-export interface RelatorioFilter {
-  dataInicio?: string;
-  dataFim?: string;
-  clienteId?: string;
-  veiculoId?: string;
-  status?: string;
-  tipoServico?: string;
+export interface Relatorio {
+  id: number;
+  cliente: string;
+  veiculo: string;
+  periodo: string;
+  tipo: 'revisoes' | 'financeiro' | 'desempenho';
+  status: 'concluido' | 'pendente' | 'aprovado' | 'rejeitado';
+  data: string;
+  valor?: number;
 }
 
-export interface EstatsRevisoes {
-  total: number;
-  concluidas: number;
-  agendadas: number;
-  emAndamento: number;
-  canceladas: number;
-  faturamentoTotal: number;
-  tempoMedioServico: number;
-  satisfacaoMedia: number;
+export interface RelatorioFilters {
+  cliente: string;
+  periodo: string;
+  tipo: string;
+  status: string;
 }
 
-export interface EstatsClientes {
-  total: number;
-  novos: number;
-  recorrentes: number;
-  inativos: number;
+export interface RelatorioStats {
+  totalRelatorios: number;
+  relatoriosConcluidos: number;
+  relatoriosPendentes: number;
+  receitaTotal: number;
 }
 
-export interface EstatsVeiculos {
-  total: number;
-  porMarca: { marca: string; quantidade: number }[];
-  porAno: { ano: number; quantidade: number }[];
-  quilometragemMedia: number;
-}
-
-export interface EstatsRecomendacoes {
-  total: number;
-  pendentes: number;
-  aprovadas: number;
-  rejeitadas: number;
-  valorTotal: number;
-}
+// Mock data
+const mockRelatorios: Relatorio[] = [
+  {
+    id: 1,
+    cliente: 'João Silva',
+    veiculo: 'Honda Civic 2019',
+    periodo: '2023-10',
+    tipo: 'revisoes',
+    status: 'concluido',
+    data: '2023-10-15',
+    valor: 850
+  },
+  {
+    id: 2,
+    cliente: 'Maria Santos',
+    veiculo: 'Toyota Corolla 2020',
+    periodo: '2023-10',
+    tipo: 'financeiro',
+    status: 'pendente',
+    data: '2023-10-20',
+    valor: 1200
+  },
+  {
+    id: 3,
+    cliente: 'Pedro Costa',
+    veiculo: 'Volkswagen Jetta 2021',
+    periodo: '2023-09',
+    tipo: 'desempenho',
+    status: 'aprovado',
+    data: '2023-09-28',
+    valor: 950
+  },
+  {
+    id: 4,
+    cliente: 'Ana Oliveira',
+    veiculo: 'Hyundai HB20 2018',
+    periodo: '2023-09',
+    tipo: 'revisoes',
+    status: 'rejeitado',
+    data: '2023-09-10',
+    valor: 650
+  }
+];
 
 export const useRelatoriosData = () => {
-  const { revisoes, clientes, veiculos } = useRevisoesData();
-  const [filtros, setFiltros] = useState<RelatorioFilter>({});
+  const [relatorios, setRelatorios] = useState<Relatorio[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState<RelatorioFilters>({
+    cliente: '',
+    periodo: '',
+    tipo: '',
+    status: ''
+  });
 
-  const revisoesFiltradas = useMemo(() => {
-    return revisoes.filter(revisao => {
-      if (filtros.dataInicio && revisao.data < filtros.dataInicio) return false;
-      if (filtros.dataFim && revisao.data > filtros.dataFim) return false;
-      if (filtros.clienteId && revisao.clienteId !== filtros.clienteId) return false;
-      if (filtros.veiculoId && revisao.veiculoId !== filtros.veiculoId) return false;
-      if (filtros.status && revisao.status !== filtros.status) return false;
-      if (filtros.tipoServico && !revisao.tipoServico.includes(filtros.tipoServico)) return false;
-      return true;
-    });
-  }, [revisoes, filtros]);
-
-  const statsRevisoes = useMemo((): EstatsRevisoes => {
-    const total = revisoesFiltradas.length;
-    const concluidas = revisoesFiltradas.filter(r => r.status === 'concluido').length;
-    const agendadas = revisoesFiltradas.filter(r => r.status === 'agendado').length;
-    const emAndamento = revisoesFiltradas.filter(r => r.status === 'em_andamento').length;
-    const canceladas = revisoesFiltradas.filter(r => r.status === 'cancelado').length;
-    
-    const faturamentoTotal = revisoesFiltradas.reduce((acc, r) => acc + (r.custoEstimado || 0), 0);
-    const tempoMedioServico = revisoesFiltradas.reduce((acc, r) => acc + (r.tempoEstimado || 0), 0) / (total || 1);
-    const satisfacaoMedia = 4.2; // Mock data
-    
-    return {
-      total,
-      concluidas,
-      agendadas,
-      emAndamento,
-      canceladas,
-      faturamentoTotal,
-      tempoMedioServico,
-      satisfacaoMedia
-    };
-  }, [revisoesFiltradas]);
-
-  const statsClientes = useMemo((): EstatsClientes => {
-    const total = clientes.length;
-    const novos = Math.floor(total * 0.3); // Mock calculation
-    const recorrentes = Math.floor(total * 0.6);
-    const inativos = total - novos - recorrentes;
-    
-    return { total, novos, recorrentes, inativos };
-  }, [clientes]);
-
-  const statsVeiculos = useMemo((): EstatsVeiculos => {
-    const total = veiculos.length;
-    
-    const porMarca = veiculos.reduce((acc: { marca: string; quantidade: number }[], veiculo) => {
-      const existing = acc.find(item => item.marca === veiculo.marca);
-      if (existing) {
-        existing.quantidade++;
-      } else {
-        acc.push({ marca: veiculo.marca, quantidade: 1 });
-      }
-      return acc;
-    }, []);
-
-    const porAno = veiculos.reduce((acc: { ano: number; quantidade: number }[], veiculo) => {
-      const existing = acc.find(item => item.ano === veiculo.ano);
-      if (existing) {
-        existing.quantidade++;
-      } else {
-        acc.push({ ano: veiculo.ano, quantidade: 1 });
-      }
-      return acc;
-    }, []);
-
-    const quilometragemMedia = veiculos.reduce((acc, v) => acc + v.quilometragem, 0) / (total || 1);
-    
-    return { total, porMarca, porAno, quilometragemMedia };
-  }, [veiculos]);
-
-  const statsRecomendacoes = useMemo((): EstatsRecomendacoes => {
-    const todasRecomendacoes = revisoesFiltradas.flatMap(r => r.recomendacoes);
-    const total = todasRecomendacoes.length;
-    const pendentes = todasRecomendacoes.filter(r => r.status === 'pendente').length;
-    const aprovadas = todasRecomendacoes.filter(r => r.status === 'aprovada').length;
-    const rejeitadas = todasRecomendacoes.filter(r => r.status === 'rejeitada').length;
-    const valorTotal = todasRecomendacoes.reduce((acc, r) => acc + (r.custoEstimado || 0), 0);
-    
-    return { total, pendentes, aprovadas, rejeitadas, valorTotal };
-  }, [revisoesFiltradas]);
-
-  const chartDataRevisoesPorMes = useMemo(() => {
-    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-    return months.map((month, index) => ({
-      mes: month,
-      revisoes: Math.floor(Math.random() * 20) + 5,
-      faturamento: Math.floor(Math.random() * 50000) + 10000
-    }));
+  useEffect(() => {
+    // Simulate API call
+    setTimeout(() => {
+      setRelatorios(mockRelatorios);
+      setLoading(false);
+    }, 1000);
   }, []);
 
-  const chartDataStatusRevisoes = useMemo(() => [
-    { status: 'Concluídas', quantidade: statsRevisoes.concluidas, color: '#22c55e' },
-    { status: 'Agendadas', quantidade: statsRevisoes.agendadas, color: '#3b82f6' },
-    { status: 'Em Andamento', quantidade: statsRevisoes.emAndamento, color: '#eab308' },
-    { status: 'Canceladas', quantidade: statsRevisoes.canceladas, color: '#ef4444' }
-  ], [statsRevisoes]);
+  const filteredRelatorios = relatorios.filter(relatorio => {
+    return (
+      (filters.cliente === '' || relatorio.cliente.toLowerCase().includes(filters.cliente.toLowerCase())) &&
+      (filters.periodo === '' || relatorio.periodo === filters.periodo) &&
+      (filters.tipo === '' || relatorio.tipo === filters.tipo) &&
+      (filters.status === '' || relatorio.status === filters.status)
+    );
+  });
+
+  const stats: RelatorioStats = {
+    totalRelatorios: relatorios.length,
+    relatoriosConcluidos: relatorios.filter(r => r.status === 'concluido').length,
+    relatoriosPendentes: relatorios.filter(r => r.status === 'pendente').length,
+    receitaTotal: relatorios.reduce((total, r) => total + (r.valor || 0), 0)
+  };
+
+  const chartData = {
+    revisoesPorMes: [
+      { mes: 'Jan', revisoes: 45, receita: 12000 },
+      { mes: 'Fev', revisoes: 52, receita: 14500 },
+      { mes: 'Mar', revisoes: 48, receita: 13200 },
+      { mes: 'Abr', revisoes: 61, receita: 16800 },
+      { mes: 'Mai', revisoes: 55, receita: 15300 },
+      { mes: 'Jun', revisoes: 67, receita: 18900 }
+    ],
+    tiposRevisao: [
+      { tipo: 'Completa', quantidade: 120, cor: '#0F3460' },
+      { tipo: 'Preventiva', quantidade: 85, cor: '#FF5722' },
+      { tipo: 'Corretiva', quantidade: 45, cor: '#FFC107' },
+      { tipo: 'Emergencial', quantidade: 23, cor: '#4CAF50' }
+    ],
+    statusDistribution: [
+      { status: 'Concluídas', value: relatorios.filter(r => r.status === 'concluido').length },
+      { status: 'Pendentes', value: relatorios.filter(r => r.status === 'pendente').length },
+      { status: 'Aprovadas', value: relatorios.filter(r => r.status === 'aprovado').length },
+      { status: 'Rejeitadas', value: relatorios.filter(r => r.status === 'rejeitado').length }
+    ]
+  };
 
   return {
-    filtros,
-    setFiltros,
-    revisoesFiltradas,
-    statsRevisoes,
-    statsClientes,
-    statsVeiculos,
-    statsRecomendacoes,
-    chartDataRevisoesPorMes,
-    chartDataStatusRevisoes,
-    clientes,
-    veiculos
+    relatorios: filteredRelatorios,
+    loading,
+    filters,
+    setFilters,
+    stats,
+    chartData
   };
 };
