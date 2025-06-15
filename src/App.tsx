@@ -1,9 +1,10 @@
 
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
 
 // Pages
 import Index from "./pages/Index";
@@ -40,39 +41,41 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Index />} />
-          
-          {/* Mechanic Routes */}
-          <Route path="/clientes" element={<Clientes />} />
-          <Route path="/clientes/novo" element={<ClienteNovo />} />
-          <Route path="/clientes/:id" element={<ClienteDetalhe />} />
-          <Route path="/clientes/:id/editar" element={<ClienteEditar />} />
-          <Route path="/veiculos" element={<Veiculos />} />
-          <Route path="/veiculos/novo" element={<VeiculoNovo />} />
-          <Route path="/veiculos/:id" element={<VeiculoDetalhe />} />
-          <Route path="/veiculos/:id/editar" element={<VeiculoEditar />} />
-          <Route path="/revisoes" element={<Revisoes />} />
-          <Route path="/revisoes/nova" element={<RevisaoNova />} />
-          <Route path="/revisoes/:id" element={<RevisaoDetalhe />} />
-          <Route path="/relatorios" element={<Relatorios />} />
-          
-          {/* Cliente Routes - Not protected anymore */}
-          <Route path="/cliente/dashboard" element={<ClienteDashboard />} />
-          <Route path="/cliente/veiculos" element={<ClienteVeiculos />} />
-          <Route path="/cliente/veiculos/:id" element={<ClienteVeiculoDetalhe />} />
-          <Route path="/cliente/revisoes" element={<ClienteRevisoes />} />
-          <Route path="/cliente/revisoes/:id" element={<ClienteRevisaoDetalhe />} />
-          <Route path="/cliente/recomendacoes" element={<ClienteRecomendacoes />} />
-          <Route path="/cliente/recomendacoes/:id" element={<ClienteRecomendacaoDetalhe />} />
-          <Route path="/cliente/perfil" element={<ClientePerfil />} />
-          
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Index />} />
+            
+            {/* Mechanic Routes */}
+            <Route path="/clientes" element={<Clientes />} />
+            <Route path="/clientes/novo" element={<ClienteNovo />} />
+            <Route path="/clientes/:id" element={<ClienteDetalhe />} />
+            <Route path="/clientes/:id/editar" element={<ClienteEditar />} />
+            <Route path="/veiculos" element={<Veiculos />} />
+            <Route path="/veiculos/novo" element={<VeiculoNovo />} />
+            <Route path="/veiculos/:id" element={<VeiculoDetalhe />} />
+            <Route path="/veiculos/:id/editar" element={<VeiculoEditar />} />
+            <Route path="/revisoes" element={<Revisoes />} />
+            <Route path="/revisoes/nova" element={<RevisaoNova />} />
+            <Route path="/revisoes/:id" element={<RevisaoDetalhe />} />
+            <Route path="/relatorios" element={<Relatorios />} />
+            
+            {/* Cliente Routes - Not protected anymore */}
+            <Route path="/cliente/dashboard" element={<ClienteDashboard />} />
+            <Route path="/cliente/veiculos" element={<ClienteVeiculos />} />
+            <Route path="/cliente/veiculos/:id" element={<ClienteVeiculoDetalhe />} />
+            <Route path="/cliente/revisoes" element={<ClienteRevisoes />} />
+            <Route path="/cliente/revisoes/:id" element={<ClienteRevisaoDetalhe />} />
+            <Route path="/cliente/recomendacoes" element={<ClienteRecomendacoes />} />
+            <Route path="/cliente/recomendacoes/:id" element={<ClienteRecomendacaoDetalhe />} />
+            <Route path="/cliente/perfil" element={<ClientePerfil />} />
+            
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
