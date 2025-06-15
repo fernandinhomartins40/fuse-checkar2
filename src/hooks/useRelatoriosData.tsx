@@ -12,11 +12,11 @@ export interface Relatorio {
   valor?: number;
 }
 
-export interface RelatorioFilters {
-  cliente: string;
-  periodo: string;
-  tipo: string;
-  status: string;
+export interface RelatorioFilter {
+  dataInicio?: string;
+  dataFim?: string;
+  clienteId?: string;
+  status?: string;
 }
 
 export interface RelatorioStats {
@@ -26,113 +26,134 @@ export interface RelatorioStats {
   receitaTotal: number;
 }
 
-// Mock data
-const mockRelatorios: Relatorio[] = [
+// Mock data for revisões
+const mockRevisoes = [
   {
     id: 1,
-    cliente: 'João Silva',
-    veiculo: 'Honda Civic 2019',
-    periodo: '2023-10',
-    tipo: 'revisoes',
+    clienteId: '1',
+    veiculoId: '1',
+    data: '2024-01-15',
+    tipoServico: 'Revisão Completa',
     status: 'concluido',
-    data: '2023-10-15',
-    valor: 850
+    custoEstimado: 850,
+    tempoEstimado: 120
   },
   {
     id: 2,
-    cliente: 'Maria Santos',
-    veiculo: 'Toyota Corolla 2020',
-    periodo: '2023-10',
-    tipo: 'financeiro',
-    status: 'pendente',
-    data: '2023-10-20',
-    valor: 1200
+    clienteId: '2',
+    veiculoId: '2',
+    data: '2024-01-20',
+    tipoServico: 'Troca de Óleo',
+    status: 'agendado',
+    custoEstimado: 200,
+    tempoEstimado: 45
   },
   {
     id: 3,
-    cliente: 'Pedro Costa',
-    veiculo: 'Volkswagen Jetta 2021',
-    periodo: '2023-09',
-    tipo: 'desempenho',
-    status: 'aprovado',
-    data: '2023-09-28',
-    valor: 950
-  },
-  {
-    id: 4,
-    cliente: 'Ana Oliveira',
-    veiculo: 'Hyundai HB20 2018',
-    periodo: '2023-09',
-    tipo: 'revisoes',
-    status: 'rejeitado',
-    data: '2023-09-10',
-    valor: 650
+    clienteId: '3',
+    veiculoId: '3',
+    data: '2024-01-25',
+    tipoServico: 'Revisão Preventiva',
+    status: 'em_andamento',
+    custoEstimado: 450,
+    tempoEstimado: 90
   }
 ];
 
+const mockClientes = [
+  { id: '1', nome: 'João Silva' },
+  { id: '2', nome: 'Maria Santos' },
+  { id: '3', nome: 'Pedro Costa' }
+];
+
+const mockVeiculos = [
+  { id: '1', marca: 'Honda', modelo: 'Civic', placa: 'ABC-1234' },
+  { id: '2', marca: 'Toyota', modelo: 'Corolla', placa: 'DEF-5678' },
+  { id: '3', marca: 'Volkswagen', modelo: 'Jetta', placa: 'GHI-9012' }
+];
+
 export const useRelatoriosData = () => {
-  const [relatorios, setRelatorios] = useState<Relatorio[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState<RelatorioFilters>({
-    cliente: '',
-    periodo: '',
-    tipo: '',
-    status: ''
-  });
+  const [filtros, setFiltros] = useState<RelatorioFilter>({});
 
   useEffect(() => {
     // Simulate API call
     setTimeout(() => {
-      setRelatorios(mockRelatorios);
       setLoading(false);
     }, 1000);
   }, []);
 
-  const filteredRelatorios = relatorios.filter(relatorio => {
+  const revisoesFiltradas = mockRevisoes.filter(revisao => {
+    const dataRevisao = new Date(revisao.data);
+    const dataInicio = filtros.dataInicio ? new Date(filtros.dataInicio) : null;
+    const dataFim = filtros.dataFim ? new Date(filtros.dataFim) : null;
+
     return (
-      (filters.cliente === '' || relatorio.cliente.toLowerCase().includes(filters.cliente.toLowerCase())) &&
-      (filters.periodo === '' || relatorio.periodo === filters.periodo) &&
-      (filters.tipo === '' || relatorio.tipo === filters.tipo) &&
-      (filters.status === '' || relatorio.status === filters.status)
+      (!dataInicio || dataRevisao >= dataInicio) &&
+      (!dataFim || dataRevisao <= dataFim) &&
+      (!filtros.clienteId || revisao.clienteId === filtros.clienteId) &&
+      (!filtros.status || revisao.status === filtros.status)
     );
   });
 
-  const stats: RelatorioStats = {
-    totalRelatorios: relatorios.length,
-    relatoriosConcluidos: relatorios.filter(r => r.status === 'concluido').length,
-    relatoriosPendentes: relatorios.filter(r => r.status === 'pendente').length,
-    receitaTotal: relatorios.reduce((total, r) => total + (r.valor || 0), 0)
+  const statsRevisoes = {
+    total: mockRevisoes.length,
+    concluidas: mockRevisoes.filter(r => r.status === 'concluido').length,
+    faturamentoTotal: mockRevisoes.reduce((total, r) => total + (r.custoEstimado || 0), 0),
+    tempoMedioServico: 85,
+    satisfacaoMedia: 4.7
   };
 
-  const chartData = {
-    revisoesPorMes: [
-      { mes: 'Jan', revisoes: 45, receita: 12000 },
-      { mes: 'Fev', revisoes: 52, receita: 14500 },
-      { mes: 'Mar', revisoes: 48, receita: 13200 },
-      { mes: 'Abr', revisoes: 61, receita: 16800 },
-      { mes: 'Mai', revisoes: 55, receita: 15300 },
-      { mes: 'Jun', revisoes: 67, receita: 18900 }
-    ],
-    tiposRevisao: [
-      { tipo: 'Completa', quantidade: 120, cor: '#0F3460' },
-      { tipo: 'Preventiva', quantidade: 85, cor: '#FF5722' },
-      { tipo: 'Corretiva', quantidade: 45, cor: '#FFC107' },
-      { tipo: 'Emergencial', quantidade: 23, cor: '#4CAF50' }
-    ],
-    statusDistribution: [
-      { status: 'Concluídas', value: relatorios.filter(r => r.status === 'concluido').length },
-      { status: 'Pendentes', value: relatorios.filter(r => r.status === 'pendente').length },
-      { status: 'Aprovadas', value: relatorios.filter(r => r.status === 'aprovado').length },
-      { status: 'Rejeitadas', value: relatorios.filter(r => r.status === 'rejeitado').length }
+  const statsClientes = {
+    total: mockClientes.length,
+    novos: 5
+  };
+
+  const statsVeiculos = {
+    total: mockVeiculos.length,
+    quilometragemMedia: 45000,
+    porMarca: [
+      { marca: 'Honda', quantidade: 15 },
+      { marca: 'Toyota', quantidade: 12 },
+      { marca: 'Volkswagen', quantidade: 8 },
+      { marca: 'Ford', quantidade: 6 }
     ]
   };
 
+  const statsRecomendacoes = {
+    total: 18,
+    pendentes: 5,
+    valorTotal: 12500
+  };
+
+  const chartDataRevisoesPorMes = [
+    { mes: 'Jan', revisoes: 45, faturamento: 12000 },
+    { mes: 'Fev', revisoes: 52, faturamento: 14500 },
+    { mes: 'Mar', revisoes: 48, faturamento: 13200 },
+    { mes: 'Abr', revisoes: 61, faturamento: 16800 },
+    { mes: 'Mai', revisoes: 55, faturamento: 15300 },
+    { mes: 'Jun', revisoes: 67, faturamento: 18900 }
+  ];
+
+  const chartDataStatusRevisoes = [
+    { status: 'Concluídas', quantidade: 45, color: '#22c55e' },
+    { status: 'Agendadas', quantidade: 12, color: '#3b82f6' },
+    { status: 'Em Andamento', quantidade: 8, color: '#f59e0b' },
+    { status: 'Canceladas', quantidade: 3, color: '#ef4444' }
+  ];
+
   return {
-    relatorios: filteredRelatorios,
-    loading,
-    filters,
-    setFilters,
-    stats,
-    chartData
+    filtros,
+    setFiltros,
+    revisoesFiltradas,
+    statsRevisoes,
+    statsClientes,
+    statsVeiculos,
+    statsRecomendacoes,
+    chartDataRevisoesPorMes,
+    chartDataStatusRevisoes,
+    clientes: mockClientes,
+    veiculos: mockVeiculos,
+    loading
   };
 };
