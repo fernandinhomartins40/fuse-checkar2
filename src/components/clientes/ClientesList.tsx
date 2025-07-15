@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { 
   Pagination, 
   PaginationContent, 
@@ -18,6 +19,13 @@ import {
   PaginationNext, 
   PaginationPrevious 
 } from "@/components/ui/pagination";
+import { 
+  MobileTable, 
+  MobileTableCard, 
+  MobileTableRow, 
+  MobileTableHeader, 
+  MobileTableActions 
+} from "@/components/ui/mobile-table";
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { useClientesData } from '../../hooks/useClientesData';
 
@@ -51,14 +59,15 @@ const ClientesList: React.FC<ClientesListProps> = ({ searchTerm }) => {
 
   return (
     <>
-      <div className="overflow-x-auto">
+      {/* Desktop Table */}
+      <div className="hidden md:block overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Nome</TableHead>
               <TableHead>Email</TableHead>
-              <TableHead className="hidden md:table-cell">Telefone</TableHead>
-              <TableHead className="hidden md:table-cell">Veículos</TableHead>
+              <TableHead className="hidden lg:table-cell">Telefone</TableHead>
+              <TableHead className="hidden lg:table-cell">Veículos</TableHead>
               <TableHead className="hidden lg:table-cell">Cadastro</TableHead>
               <TableHead className="hidden lg:table-cell">Status</TableHead>
               <TableHead className="text-right">Ações</TableHead>
@@ -69,19 +78,17 @@ const ClientesList: React.FC<ClientesListProps> = ({ searchTerm }) => {
               currentClientes.map((cliente) => (
                 <TableRow key={cliente.id}>
                   <TableCell className="font-medium">{cliente.nome}</TableCell>
-                  <TableCell>{cliente.email}</TableCell>
-                  <TableCell className="hidden md:table-cell">{cliente.telefone}</TableCell>
-                  <TableCell className="hidden md:table-cell">{cliente.veiculos.length}</TableCell>
+                  <TableCell className="max-w-[200px] truncate">{cliente.email}</TableCell>
+                  <TableCell className="hidden lg:table-cell">{cliente.telefone}</TableCell>
+                  <TableCell className="hidden lg:table-cell">{cliente.veiculos.length}</TableCell>
                   <TableCell className="hidden lg:table-cell">{new Date(cliente.dataCadastro).toLocaleDateString('pt-BR')}</TableCell>
                   <TableCell className="hidden lg:table-cell">
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      cliente.ativo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}>
+                    <Badge variant={cliente.ativo ? "default" : "secondary"}>
                       {cliente.ativo ? 'Ativo' : 'Inativo'}
-                    </span>
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-1">
                       <Link to={`/clientes/${cliente.id}`}>
                         <Button variant="ghost" size="icon">
                           <Eye className="h-4 w-4" />
@@ -93,7 +100,7 @@ const ClientesList: React.FC<ClientesListProps> = ({ searchTerm }) => {
                         </Button>
                       </Link>
                       <Button variant="ghost" size="icon" onClick={() => handleConfirmDelete(cliente.id)}>
-                        <Trash2 className="h-4 w-4 text-red-500" />
+                        <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </div>
                   </TableCell>
@@ -101,7 +108,7 @@ const ClientesList: React.FC<ClientesListProps> = ({ searchTerm }) => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-6 text-gray-500">
+                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                   Nenhum cliente encontrado
                 </TableCell>
               </TableRow>
@@ -109,6 +116,62 @@ const ClientesList: React.FC<ClientesListProps> = ({ searchTerm }) => {
           </TableBody>
         </Table>
       </div>
+
+      {/* Mobile Cards */}
+      <MobileTable>
+        {currentClientes.length > 0 ? (
+          currentClientes.map((cliente) => (
+            <MobileTableCard key={cliente.id}>
+              <MobileTableHeader>
+                {cliente.nome}
+              </MobileTableHeader>
+              
+              <div className="space-y-2">
+                <MobileTableRow 
+                  label="Email" 
+                  value={<span className="text-xs break-all">{cliente.email}</span>} 
+                />
+                <MobileTableRow 
+                  label="Telefone" 
+                  value={cliente.telefone} 
+                />
+                <MobileTableRow 
+                  label="Veículos" 
+                  value={cliente.veiculos.length} 
+                />
+                <MobileTableRow 
+                  label="Status" 
+                  value={
+                    <Badge variant={cliente.ativo ? "default" : "secondary"} className="text-xs">
+                      {cliente.ativo ? 'Ativo' : 'Inativo'}
+                    </Badge>
+                  } 
+                />
+              </div>
+
+              <MobileTableActions>
+                <Link to={`/clientes/${cliente.id}`}>
+                  <Button variant="ghost" size="sm">
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link to={`/clientes/${cliente.id}/editar`}>
+                  <Button variant="ghost" size="sm">
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <Button variant="ghost" size="sm" onClick={() => handleConfirmDelete(cliente.id)}>
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                </Button>
+              </MobileTableActions>
+            </MobileTableCard>
+          ))
+        ) : (
+          <div className="text-center py-8 text-muted-foreground">
+            Nenhum cliente encontrado
+          </div>
+        )}
+      </MobileTable>
 
       {totalPages > 1 && (
         <div className="py-4 border-t">

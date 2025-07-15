@@ -1,12 +1,13 @@
 
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import Header from '../components/Header';
+import Layout from '../components/Layout';
 import { RevisaoForm } from '../components/revisoes/RevisaoForm';
 import { useRevisoesData } from '../hooks/useRevisoesData';
 import { Revisao } from '../types/revisoes';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const RevisaoNova = () => {
   const { addRevisao } = useRevisoesData();
@@ -37,26 +38,26 @@ const RevisaoNova = () => {
   };
 
   return (
-    <div id="webcrumbs">
-      <div className="w-full lg:w-[1200px] mx-auto bg-gray-50 min-h-screen p-0 font-inter">
-        <Header />
-        <main className="container mx-auto py-6 px-4">
-          <div className="mb-6">
-            <Link to="/revisoes" className="text-gray-600 hover:text-[#0F3460] flex items-center mb-4">
-              <ArrowLeft className="h-4 w-4 mr-1" />
-              Voltar para lista de revisões
+    <Layout>
+      <div className="space-y-4 md:space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <Link to="/revisoes">
+              <Button variant="ghost" className="mb-4 p-0 text-muted-foreground hover:text-foreground">
+                <ArrowLeft className="h-4 w-4 mr-1" />
+                Voltar para revisões
+              </Button>
             </Link>
-            
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Nova Revisão</h2>
-            <p className="text-gray-600">Crie uma nova revisão para um veículo cliente.</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">Nova Revisão</h1>
+            <p className="text-muted-foreground mt-1">Crie uma nova revisão para um veículo cliente.</p>
           </div>
-          
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <RevisaoForm onSubmit={handleSubmit} onCancel={handleCancel} />
-          </div>
-        </main>
+        </div>
+        
+        <div className="bg-card rounded-lg border shadow-sm p-4 md:p-6">
+          <RevisaoForm onSubmit={handleSubmit} onCancel={handleCancel} />
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

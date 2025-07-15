@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRevisoesData } from '../../hooks/useRevisoesData';
 import { newChecklistTemplate } from '../../data/newChecklistTemplate';
@@ -11,6 +12,7 @@ import { ChecklistCategory } from './ChecklistCategory';
 import { FinalizationSection } from './FinalizationSection';
 import { Revisao, CategoriaChecklist, ItemChecklist, PreDiagnosisQuestion, FinalizationData } from '../../types/revisoes';
 import { CheckCircle, Clock, AlertTriangle } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface RevisaoFormProps {
   onSubmit: (revisao: Omit<Revisao, 'id'>) => void;
@@ -119,160 +121,192 @@ export const RevisaoForm: React.FC<RevisaoFormProps> = ({ onSubmit, onCancel }) 
     onSubmit(novaRevisao);
   };
 
+  const isMobile = useIsMobile();
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="dados-basicos" className="flex items-center space-x-2">
-            <span>1. Dados Básicos</span>
+        <TabsList className="grid w-full grid-cols-3 h-auto">
+          <TabsTrigger value="dados-basicos" className="flex flex-col items-center py-3 px-2 text-xs md:text-sm">
+            <span className="hidden sm:inline">1. Dados Básicos</span>
+            <span className="sm:hidden">Dados</span>
           </TabsTrigger>
           <TabsTrigger 
             value="checklist" 
             disabled={!canProceedToChecklist()}
-            className="flex items-center space-x-2"
+            className="flex flex-col items-center py-3 px-2 text-xs md:text-sm"
           >
-            <span>2. Checklist</span>
+            <span className="hidden sm:inline">2. Checklist</span>
+            <span className="sm:hidden">Check</span>
             {stats.concluidos > 0 && (
-              <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                {stats.percentual}%
+              <span className="px-1 py-0.5 bg-blue-100 text-blue-800 text-[10px] md:text-xs rounded-full mt-1">
+                {isMobile ? `${stats.percentual}%` : `${stats.percentual}%`}
               </span>
             )}
           </TabsTrigger>
           <TabsTrigger 
             value="finalizacao" 
             disabled={!canSubmit()}
-            className="flex items-center space-x-2"
+            className="flex flex-col items-center py-3 px-2 text-xs md:text-sm"
           >
-            <span>3. Finalização</span>
+            <span className="hidden sm:inline">3. Finalização</span>
+            <span className="sm:hidden">Final</span>
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="dados-basicos" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <Label htmlFor="cliente">Cliente</Label>
-              <select
-                id="cliente"
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+        <TabsContent value="dados-basicos" className="space-y-4 md:space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="cliente" className="text-sm font-medium">Cliente *</Label>
+              <Select
                 value={formData.clienteId}
-                onChange={(e) => setFormData(prev => ({ ...prev, clienteId: e.target.value, veiculoId: '' }))}
-                required
+                onValueChange={(value) => setFormData(prev => ({ ...prev, clienteId: value, veiculoId: '' }))}
               >
-                <option value="">Selecione um cliente</option>
-                {clientes.map(cliente => (
-                  <option key={cliente.id} value={cliente.id}>{cliente.nome}</option>
-                ))}
-              </select>
+                <SelectTrigger className="h-10">
+                  <SelectValue placeholder="Selecione um cliente" />
+                </SelectTrigger>
+                <SelectContent>
+                  {clientes.map(cliente => (
+                    <SelectItem key={cliente.id} value={cliente.id}>
+                      {cliente.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
-            <div>
-              <Label htmlFor="veiculo">Veículo</Label>
-              <select
-                id="veiculo"
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+            <div className="space-y-2">
+              <Label htmlFor="veiculo" className="text-sm font-medium">Veículo *</Label>
+              <Select
                 value={formData.veiculoId}
-                onChange={(e) => setFormData(prev => ({ ...prev, veiculoId: e.target.value }))}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, veiculoId: value }))}
                 disabled={!formData.clienteId}
-                required
               >
-                <option value="">Selecione um veículo</option>
-                {veiculosDoCliente.map(veiculo => (
-                  <option key={veiculo.id} value={veiculo.id}>
-                    {veiculo.marca} {veiculo.modelo} - {veiculo.placa}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className="h-10">
+                  <SelectValue placeholder="Selecione um veículo" />
+                </SelectTrigger>
+                <SelectContent>
+                  {veiculosDoCliente.map(veiculo => (
+                    <SelectItem key={veiculo.id} value={veiculo.id}>
+                      <span className="block md:hidden">{veiculo.marca} {veiculo.modelo}</span>
+                      <span className="hidden md:block">{veiculo.marca} {veiculo.modelo} - {veiculo.placa}</span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
-            <div>
-              <Label htmlFor="tipoServico">Tipo de Serviço</Label>
-              <select
-                id="tipoServico"
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+            <div className="space-y-2">
+              <Label htmlFor="tipoServico" className="text-sm font-medium">Tipo de Serviço *</Label>
+              <Select
                 value={formData.tipoServico}
-                onChange={(e) => setFormData(prev => ({ ...prev, tipoServico: e.target.value }))}
-                required
+                onValueChange={(value) => setFormData(prev => ({ ...prev, tipoServico: value }))}
               >
-                <option value="">Selecione o tipo</option>
-                <option value="Revisão Completa">Revisão Completa</option>
-                <option value="Revisão Programada">Revisão Programada</option>
-                <option value="Troca de Óleo">Troca de Óleo</option>
-                <option value="Alinhamento e Balanceamento">Alinhamento e Balanceamento</option>
-                <option value="Sistema de Freios">Sistema de Freios</option>
-                <option value="Sistema Elétrico">Sistema Elétrico</option>
-                <option value="Ar Condicionado">Ar Condicionado</option>
-                <option value="Suspensão">Suspensão</option>
-                <option value="Outros">Outros</option>
-              </select>
+                <SelectTrigger className="h-10">
+                  <SelectValue placeholder="Selecione o tipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Revisão Completa">Revisão Completa</SelectItem>
+                  <SelectItem value="Revisão Programada">Revisão Programada</SelectItem>
+                  <SelectItem value="Troca de Óleo">Troca de Óleo</SelectItem>
+                  <SelectItem value="Alinhamento e Balanceamento">Alinhamento e Balanceamento</SelectItem>
+                  <SelectItem value="Sistema de Freios">Sistema de Freios</SelectItem>
+                  <SelectItem value="Sistema Elétrico">Sistema Elétrico</SelectItem>
+                  <SelectItem value="Ar Condicionado">Ar Condicionado</SelectItem>
+                  <SelectItem value="Suspensão">Suspensão</SelectItem>
+                  <SelectItem value="Outros">Outros</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            <div>
-              <Label htmlFor="data">Data da Revisão</Label>
+            <div className="space-y-2">
+              <Label htmlFor="data" className="text-sm font-medium">Data da Revisão *</Label>
               <Input
                 id="data"
                 type="date"
                 value={formData.data}
                 onChange={(e) => setFormData(prev => ({ ...prev, data: e.target.value }))}
+                className="h-10"
                 required
               />
             </div>
 
-            <div>
-              <Label htmlFor="quilometragem">Quilometragem</Label>
+            <div className="space-y-2">
+              <Label htmlFor="quilometragem" className="text-sm font-medium">Quilometragem *</Label>
               <Input
                 id="quilometragem"
                 type="number"
+                placeholder="Ex: 50000"
                 value={formData.quilometragem}
-                onChange={(e) => setFormData(prev => ({ ...prev, quilometragem: parseInt(e.target.value) }))}
+                onChange={(e) => setFormData(prev => ({ ...prev, quilometragem: parseInt(e.target.value) || 0 }))}
+                className="h-10"
                 required
               />
             </div>
 
-            <div>
-              <Label htmlFor="tecnicos">Técnicos Responsáveis</Label>
+            <div className="space-y-2">
+              <Label htmlFor="tecnicos" className="text-sm font-medium">Técnicos Responsáveis *</Label>
               <Input
                 id="tecnicos"
                 type="text"
-                placeholder="Separe por vírgula: João Silva, Maria Santos"
+                placeholder={isMobile ? "João Silva, Maria Santos" : "Separe por vírgula: João Silva, Maria Santos"}
                 value={formData.tecnicos}
                 onChange={(e) => setFormData(prev => ({ ...prev, tecnicos: e.target.value }))}
+                className="h-10"
                 required
               />
             </div>
 
-            <div>
-              <Label htmlFor="custoEstimado">Custo Estimado (R$)</Label>
+            <div className="space-y-2">
+              <Label htmlFor="custoEstimado" className="text-sm font-medium">Custo Estimado (R$)</Label>
               <Input
                 id="custoEstimado"
                 type="number"
                 step="0.01"
+                placeholder="0.00"
                 value={formData.custoEstimado}
-                onChange={(e) => setFormData(prev => ({ ...prev, custoEstimado: parseFloat(e.target.value) }))}
+                onChange={(e) => setFormData(prev => ({ ...prev, custoEstimado: parseFloat(e.target.value) || 0 }))}
+                className="h-10"
               />
             </div>
 
-            <div>
-              <Label htmlFor="tempoEstimado">Tempo Estimado (minutos)</Label>
+            <div className="space-y-2">
+              <Label htmlFor="tempoEstimado" className="text-sm font-medium">Tempo Estimado (min)</Label>
               <Input
                 id="tempoEstimado"
                 type="number"
+                placeholder="120"
                 value={formData.tempoEstimado}
-                onChange={(e) => setFormData(prev => ({ ...prev, tempoEstimado: parseInt(e.target.value) }))}
+                onChange={(e) => setFormData(prev => ({ ...prev, tempoEstimado: parseInt(e.target.value) || 0 }))}
+                className="h-10"
               />
             </div>
           </div>
 
-          <div className="flex justify-between">
-            <Button type="button" variant="outline" onClick={onCancel}>
+          <div className="space-y-2">
+            <Label htmlFor="observacoes" className="text-sm font-medium">Observações</Label>
+            <Textarea
+              id="observacoes"
+              placeholder="Observações adicionais sobre a revisão..."
+              value={formData.observacoes}
+              onChange={(e) => setFormData(prev => ({ ...prev, observacoes: e.target.value }))}
+              rows={3}
+              className="resize-none"
+            />
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 sm:justify-between">
+            <Button type="button" variant="outline" onClick={onCancel} className="w-full sm:w-auto">
               Cancelar
             </Button>
             <Button 
               type="button" 
               onClick={() => setActiveTab('checklist')}
               disabled={!canProceedToChecklist()}
-              className="bg-[#0F3460] hover:bg-[#0F3460]/90"
+              className="bg-primary hover:bg-primary/90 w-full sm:w-auto"
             >
-              Próximo: Checklist
+              <span className="hidden sm:inline">Próximo: Checklist</span>
+              <span className="sm:hidden">Próximo</span>
             </Button>
           </div>
         </TabsContent>
