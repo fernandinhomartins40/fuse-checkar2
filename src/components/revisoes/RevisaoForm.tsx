@@ -6,9 +6,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRevisoesData } from '../../hooks/useRevisoesData';
-import { checklistTemplate } from '../../data/checklistTemplate';
+import { newChecklistTemplate } from '../../data/newChecklistTemplate';
 import { ChecklistCategory } from './ChecklistCategory';
-import { Revisao, CategoriaChecklist, ItemChecklist } from '../../types/revisoes';
+import { FinalizationSection } from './FinalizationSection';
+import { Revisao, CategoriaChecklist, ItemChecklist, PreDiagnosisQuestion, FinalizationData } from '../../types/revisoes';
 import { CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 
 interface RevisaoFormProps {
@@ -31,13 +32,25 @@ export const RevisaoForm: React.FC<RevisaoFormProps> = ({ onSubmit, onCancel }) 
     tempoEstimado: 0
   });
 
-  // Inicializar checklist com template
+  // Inicializar checklist com novo template
   const [checklist, setChecklist] = useState<CategoriaChecklist[]>(
-    checklistTemplate.map(categoria => ({
+    newChecklistTemplate.map(categoria => ({
       ...categoria,
-      itens: categoria.itens.map(item => ({ ...item }))
+      itens: categoria.itens.map(item => ({ ...item })),
+      preDiagnostico: categoria.preDiagnostico?.map(question => ({ ...question }))
     }))
   );
+
+  // Estado para finalização
+  const [finalizacao, setFinalizacao] = useState<FinalizationData>({
+    observacoesGerais: '',
+    problemasCriticos: [],
+    recomendacoesPrioritarias: [],
+    custoTotalEstimado: 0,
+    tempoEstimadoReparo: 0,
+    proximaRevisaoData: '',
+    proximaRevisaoKm: 0
+  });
 
   const veiculosDoCliente = veiculos.filter(v => v.clienteId === formData.clienteId);
 
@@ -50,6 +63,21 @@ export const RevisaoForm: React.FC<RevisaoFormProps> = ({ onSubmit, onCancel }) 
         )
       }))
     );
+  };
+
+  const handleUpdatePreDiagnosis = (questionId: string, resposta: string | boolean) => {
+    setChecklist(prev => 
+      prev.map(categoria => ({
+        ...categoria,
+        preDiagnostico: categoria.preDiagnostico?.map(question =>
+          question.id === questionId ? { ...question, resposta } : question
+        )
+      }))
+    );
+  };
+
+  const handleUpdateFinalizacao = (updates: Partial<FinalizationData>) => {
+    setFinalizacao(prev => ({ ...prev, ...updates }));
   };
 
   const getChecklistStats = () => {
@@ -84,7 +112,8 @@ export const RevisaoForm: React.FC<RevisaoFormProps> = ({ onSubmit, onCancel }) 
       status: 'em_andamento',
       tecnicos: formData.tecnicos.split(',').map(t => t.trim()).filter(t => t),
       checklist,
-      recomendacoes: []
+      recomendacoes: [],
+      finalizacao
     };
 
     onSubmit(novaRevisao);
@@ -288,6 +317,7 @@ export const RevisaoForm: React.FC<RevisaoFormProps> = ({ onSubmit, onCancel }) 
                 key={categoria.id}
                 categoria={categoria}
                 onUpdateItem={handleUpdateChecklistItem}
+                onUpdatePreDiagnosis={handleUpdatePreDiagnosis}
               />
             ))}
           </div>
@@ -345,17 +375,11 @@ export const RevisaoForm: React.FC<RevisaoFormProps> = ({ onSubmit, onCancel }) 
             </div>
           </div>
 
-          {/* Observações Finais */}
-          <div>
-            <Label htmlFor="observacoes">Observações Finais</Label>
-            <Textarea
-              id="observacoes"
-              placeholder="Observações gerais sobre a revisão..."
-              value={formData.observacoes}
-              onChange={(e) => setFormData(prev => ({ ...prev, observacoes: e.target.value }))}
-              className="min-h-[100px]"
-            />
-          </div>
+          {/* Seção de Finalização */}
+          <FinalizationSection
+            finalizacao={finalizacao}
+            onUpdateFinalizacao={handleUpdateFinalizacao}
+          />
 
           <div className="flex justify-between">
             <Button 

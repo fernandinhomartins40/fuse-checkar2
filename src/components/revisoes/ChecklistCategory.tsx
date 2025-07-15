@@ -1,19 +1,22 @@
 
 import React, { useState } from 'react';
-import { CategoriaChecklist } from '../../types/revisoes';
+import { CategoriaChecklist, PreDiagnosisQuestion } from '../../types/revisoes';
 import { ChecklistItem } from './ChecklistItem';
+import { PreDiagnosisSection } from './PreDiagnosisSection';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
 interface ChecklistCategoryProps {
   categoria: CategoriaChecklist;
   onUpdateItem: (itemId: string, updates: any) => void;
+  onUpdatePreDiagnosis?: (questionId: string, resposta: string | boolean) => void;
   readonly?: boolean;
 }
 
 export const ChecklistCategory: React.FC<ChecklistCategoryProps> = ({
   categoria,
   onUpdateItem,
+  onUpdatePreDiagnosis,
   readonly = false
 }) => {
   const [isOpen, setIsOpen] = useState(true);
@@ -51,6 +54,16 @@ export const ChecklistCategory: React.FC<ChecklistCategoryProps> = ({
         </CollapsibleTrigger>
         <CollapsibleContent>
           <div className="p-4 space-y-4">
+            {/* Pre-diagnosis Section */}
+            {categoria.preDiagnostico && categoria.preDiagnostico.length > 0 && onUpdatePreDiagnosis && (
+              <PreDiagnosisSection
+                questions={categoria.preDiagnostico}
+                onUpdateQuestion={onUpdatePreDiagnosis}
+                readonly={readonly}
+              />
+            )}
+            
+            {/* Checklist Items */}
             {categoria.itens.map(item => (
               <ChecklistItem
                 key={item.id}

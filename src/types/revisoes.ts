@@ -1,4 +1,13 @@
 
+export interface PreDiagnosisQuestion {
+  id: string;
+  pergunta: string;
+  tipo: 'sim_nao' | 'texto' | 'multipla_escolha';
+  opcoes?: string[];
+  resposta?: string | boolean;
+  obrigatoria: boolean;
+}
+
 export interface ItemChecklist {
   id: string;
   nome: string;
@@ -7,13 +16,27 @@ export interface ItemChecklist {
   status: 'ok' | 'nao_ok' | 'nao_aplicavel' | 'pendente';
   observacoes?: string;
   prioridade: 'baixa' | 'media' | 'alta' | 'critica';
+  detalheProblema?: string;
+  acaoRecomendada?: string;
+  custoEstimado?: number;
 }
 
 export interface CategoriaChecklist {
   id: string;
   nome: string;
   descricao: string;
+  preDiagnostico?: PreDiagnosisQuestion[];
   itens: ItemChecklist[];
+}
+
+export interface FinalizationData {
+  observacoesGerais: string;
+  problemasCriticos: string[];
+  recomendacoesPrioritarias: string[];
+  custoTotalEstimado: number;
+  tempoEstimadoReparo: number;
+  proximaRevisaoData: string;
+  proximaRevisaoKm: number;
 }
 
 export interface Revisao {
@@ -35,6 +58,7 @@ export interface Revisao {
     quilometragem: number;
     tipo: string;
   };
+  finalizacao?: FinalizationData;
 }
 
 export interface Recomendacao {

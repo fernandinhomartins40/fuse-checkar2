@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import { RevisaoForm } from '../components/revisoes/RevisaoForm';
 import { useRevisoesData } from '../hooks/useRevisoesData';
+import { Revisao } from '../types/revisoes';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft } from 'lucide-react';
 
@@ -12,7 +13,7 @@ const RevisaoNova = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleSubmit = (revisaoData: any) => {
+  const handleSubmit = (revisaoData: Omit<Revisao, 'id'>) => {
     try {
       const novaRevisao = addRevisao(revisaoData);
       
