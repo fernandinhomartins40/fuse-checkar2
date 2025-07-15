@@ -2,173 +2,63 @@ import { CategoriaChecklist } from '../types/revisoes';
 
 export const newChecklistTemplate: CategoriaChecklist[] = [
   {
-    id: 'motor',
-    nome: 'Motor',
-    descricao: 'Verificações completas do sistema do motor',
-    preDiagnostico: [
-      {
-        id: 'motor_pre_1',
-        pergunta: 'O veículo apresenta algum ruído estranho no motor?',
-        tipo: 'sim_nao',
-        obrigatoria: true
-      },
-      {
-        id: 'motor_pre_2',
-        pergunta: 'Que tipo de ruído você percebe?',
-        tipo: 'multipla_escolha',
-        opcoes: ['Batida', 'Chiado', 'Zumbido', 'Estalo', 'Nenhum'],
-        obrigatoria: false
-      },
-      {
-        id: 'motor_pre_3',
-        pergunta: 'Há fumaça saindo do escapamento?',
-        tipo: 'multipla_escolha',
-        opcoes: ['Não', 'Fumaça branca', 'Fumaça preta', 'Fumaça azul'],
-        obrigatoria: true
-      },
-      {
-        id: 'motor_pre_4',
-        pergunta: 'O motor apresenta perda de potência?',
-        tipo: 'sim_nao',
-        obrigatoria: true
-      },
-      {
-        id: 'motor_pre_5',
-        pergunta: 'O consumo de combustível aumentou?',
-        tipo: 'sim_nao',
-        obrigatoria: true
-      },
-      {
-        id: 'motor_pre_6',
-        pergunta: 'Quando foi feita a última troca de óleo?',
-        tipo: 'texto',
-        obrigatoria: false
-      },
-      {
-        id: 'motor_pre_7',
-        pergunta: 'Há vazamentos visíveis sob o veículo?',
-        tipo: 'multipla_escolha',
-        opcoes: ['Não', 'Óleo preto', 'Óleo marrom', 'Líquido verde', 'Líquido vermelho'],
-        obrigatoria: true
-      }
-    ],
+    id: 'prevencao',
+    nome: '🛡️ ITENS DE PREVENÇÃO',
+    descricao: 'Itens básicos de prevenção e manutenção',
+    preDiagnostico: [],
     itens: [
       {
-        id: 'motor_1',
-        nome: 'Nível de óleo do motor',
-        categoria: 'motor',
+        id: 'prev_1',
+        nome: 'Óleo do motor',
+        categoria: 'prevencao',
         obrigatorio: true,
         status: 'pendente',
         prioridade: 'alta'
       },
       {
-        id: 'motor_2',
-        nome: 'Qualidade do óleo do motor',
-        categoria: 'motor',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'alta'
-      },
-      {
-        id: 'motor_3',
+        id: 'prev_2',
         nome: 'Filtro de óleo',
-        categoria: 'motor',
+        categoria: 'prevencao',
         obrigatorio: true,
         status: 'pendente',
         prioridade: 'alta'
       },
       {
-        id: 'motor_4',
+        id: 'prev_3',
         nome: 'Filtro de ar',
-        categoria: 'motor',
+        categoria: 'prevencao',
         obrigatorio: true,
         status: 'pendente',
         prioridade: 'media'
       },
       {
-        id: 'motor_5',
+        id: 'prev_4',
         nome: 'Filtro de combustível',
-        categoria: 'motor',
+        categoria: 'prevencao',
         obrigatorio: true,
         status: 'pendente',
         prioridade: 'media'
       },
       {
-        id: 'motor_6',
-        nome: 'Velas de ignição',
-        categoria: 'motor',
-        obrigatorio: false,
+        id: 'prev_5',
+        nome: 'Água do radiador',
+        categoria: 'prevencao',
+        obrigatorio: true,
         status: 'pendente',
-        prioridade: 'media'
+        prioridade: 'alta'
       },
       {
-        id: 'motor_7',
-        nome: 'Cabos de vela',
-        categoria: 'motor',
-        obrigatorio: false,
-        status: 'pendente',
-        prioridade: 'media'
-      },
-      {
-        id: 'motor_8',
-        nome: 'Correia dentada',
-        categoria: 'motor',
+        id: 'prev_6',
+        nome: 'Fluído de freio',
+        categoria: 'prevencao',
         obrigatorio: true,
         status: 'pendente',
         prioridade: 'critica'
       },
       {
-        id: 'motor_9',
-        nome: 'Correia do alternador',
-        categoria: 'motor',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'alta'
-      },
-      {
-        id: 'motor_10',
-        nome: 'Bateria e terminais',
-        categoria: 'motor',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'alta'
-      },
-      {
-        id: 'motor_11',
-        nome: 'Sistema de arrefecimento',
-        categoria: 'motor',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'critica'
-      },
-      {
-        id: 'motor_12',
-        nome: 'Radiador',
-        categoria: 'motor',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'alta'
-      },
-      {
-        id: 'motor_13',
-        nome: 'Mangueiras do radiador',
-        categoria: 'motor',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'alta'
-      },
-      {
-        id: 'motor_14',
-        nome: 'Bomba d\'água',
-        categoria: 'motor',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'critica'
-      },
-      {
-        id: 'motor_15',
-        nome: 'Termostato',
-        categoria: 'motor',
+        id: 'prev_7',
+        nome: 'Óleo da direção hidráulica',
+        categoria: 'prevencao',
         obrigatorio: false,
         status: 'pendente',
         prioridade: 'media'
@@ -176,125 +66,255 @@ export const newChecklistTemplate: CategoriaChecklist[] = [
     ]
   },
   {
-    id: 'freios',
-    nome: 'Sistema de Freios',
-    descricao: 'Verificações completas do sistema de freios',
-    preDiagnostico: [
-      {
-        id: 'freios_pre_1',
-        pergunta: 'O pedal do freio está mais "mole" que o normal?',
-        tipo: 'sim_nao',
-        obrigatoria: true
-      },
-      {
-        id: 'freios_pre_2',
-        pergunta: 'Há algum ruído ao frear?',
-        tipo: 'multipla_escolha',
-        opcoes: ['Não', 'Chiado', 'Rangido', 'Vibração', 'Barulho metálico'],
-        obrigatoria: true
-      },
-      {
-        id: 'freios_pre_3',
-        pergunta: 'O veículo "puxa" para um lado ao frear?',
-        tipo: 'sim_nao',
-        obrigatoria: true
-      },
-      {
-        id: 'freios_pre_4',
-        pergunta: 'O pedal do freio vibra durante a frenagem?',
-        tipo: 'sim_nao',
-        obrigatoria: true
-      },
-      {
-        id: 'freios_pre_5',
-        pergunta: 'A distância de frenagem aumentou?',
-        tipo: 'sim_nao',
-        obrigatoria: true
-      },
-      {
-        id: 'freios_pre_6',
-        pergunta: 'Quando foi feita a última revisão dos freios?',
-        tipo: 'texto',
-        obrigatoria: false
-      }
-    ],
+    id: 'carroceria',
+    nome: '🚘 CONDIÇÃO EXTERNA (CARROCERIA)',
+    descricao: 'Verificação da condição externa do veículo',
+    preDiagnostico: [],
     itens: [
       {
-        id: 'freios_1',
-        nome: 'Pastilhas de freio dianteiras',
-        categoria: 'freios',
+        id: 'carr_1',
+        nome: 'Pintura',
+        categoria: 'carroceria',
         obrigatorio: true,
         status: 'pendente',
-        prioridade: 'critica'
+        prioridade: 'baixa'
       },
       {
-        id: 'freios_2',
-        nome: 'Pastilhas de freio traseiras',
-        categoria: 'freios',
+        id: 'carr_2',
+        nome: 'Paralamas',
+        categoria: 'carroceria',
         obrigatorio: true,
         status: 'pendente',
-        prioridade: 'critica'
+        prioridade: 'baixa'
       },
       {
-        id: 'freios_3',
-        nome: 'Discos de freio dianteiros',
-        categoria: 'freios',
+        id: 'carr_3',
+        nome: 'Para-choques',
+        categoria: 'carroceria',
         obrigatorio: true,
         status: 'pendente',
-        prioridade: 'critica'
+        prioridade: 'baixa'
       },
       {
-        id: 'freios_4',
-        nome: 'Discos de freio traseiros',
-        categoria: 'freios',
+        id: 'carr_4',
+        nome: 'Portas',
+        categoria: 'carroceria',
         obrigatorio: true,
         status: 'pendente',
-        prioridade: 'critica'
+        prioridade: 'media'
       },
       {
-        id: 'freios_5',
-        nome: 'Fluido de freio',
-        categoria: 'freios',
+        id: 'carr_5',
+        nome: 'Capô',
+        categoria: 'carroceria',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'media'
+      },
+      {
+        id: 'carr_6',
+        nome: 'Porta-malas',
+        categoria: 'carroceria',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'media'
+      },
+      {
+        id: 'carr_7',
+        nome: 'Teto',
+        categoria: 'carroceria',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'baixa'
+      },
+      {
+        id: 'carr_8',
+        nome: 'Vidros',
+        categoria: 'carroceria',
         obrigatorio: true,
         status: 'pendente',
         prioridade: 'alta'
       },
       {
-        id: 'freios_6',
-        nome: 'Mangueiras de freio',
-        categoria: 'freios',
+        id: 'carr_9',
+        nome: 'Espelhos retrovisores',
+        categoria: 'carroceria',
         obrigatorio: true,
         status: 'pendente',
         prioridade: 'alta'
       },
       {
-        id: 'freios_7',
-        nome: 'Cilindro mestre',
-        categoria: 'freios',
+        id: 'carr_10',
+        nome: 'Lanternas traseiras',
+        categoria: 'carroceria',
         obrigatorio: true,
         status: 'pendente',
         prioridade: 'alta'
       },
       {
-        id: 'freios_8',
+        id: 'carr_11',
+        nome: 'Faróis',
+        categoria: 'carroceria',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'alta'
+      },
+      {
+        id: 'carr_12',
+        nome: 'Grade frontal',
+        categoria: 'carroceria',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'baixa'
+      }
+    ]
+  },
+  {
+    id: 'mecanica',
+    nome: '⚙️ MECÂNICA',
+    descricao: 'Verificações do sistema mecânico',
+    preDiagnostico: [],
+    itens: [
+      {
+        id: 'mec_1',
+        nome: 'Motor',
+        categoria: 'mecanica',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'critica'
+      },
+      {
+        id: 'mec_2',
+        nome: 'Câmbio',
+        categoria: 'mecanica',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'critica'
+      },
+      {
+        id: 'mec_3',
+        nome: 'Embreagem',
+        categoria: 'mecanica',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'alta'
+      },
+      {
+        id: 'mec_4',
+        nome: 'Acelerador',
+        categoria: 'mecanica',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'alta'
+      },
+      {
+        id: 'mec_5',
+        nome: 'Freio',
+        categoria: 'mecanica',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'critica'
+      },
+      {
+        id: 'mec_6',
+        nome: 'Pastilhas',
+        categoria: 'mecanica',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'critica'
+      },
+      {
+        id: 'mec_7',
+        nome: 'Discos',
+        categoria: 'mecanica',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'critica'
+      },
+      {
+        id: 'mec_8',
         nome: 'Freio de mão',
-        categoria: 'freios',
+        categoria: 'mecanica',
         obrigatorio: true,
         status: 'pendente',
         prioridade: 'alta'
       },
       {
-        id: 'freios_9',
-        nome: 'Servo-freio',
-        categoria: 'freios',
+        id: 'mec_9',
+        nome: 'Pneus',
+        categoria: 'mecanica',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'critica'
+      },
+      {
+        id: 'mec_10',
+        nome: 'Rodas',
+        categoria: 'mecanica',
         obrigatorio: true,
         status: 'pendente',
         prioridade: 'alta'
       },
       {
-        id: 'freios_10',
-        nome: 'ABS (se equipado)',
-        categoria: 'freios',
+        id: 'mec_11',
+        nome: 'Estepe',
+        categoria: 'mecanica',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'media'
+      },
+      {
+        id: 'mec_12',
+        nome: 'Escapamento',
+        categoria: 'mecanica',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'media'
+      },
+      {
+        id: 'mec_13',
+        nome: 'Correias',
+        categoria: 'mecanica',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'alta'
+      },
+      {
+        id: 'mec_14',
+        nome: 'Mangueiras',
+        categoria: 'mecanica',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'media'
+      },
+      {
+        id: 'mec_15',
+        nome: 'Radiador',
+        categoria: 'mecanica',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'alta'
+      },
+      {
+        id: 'mec_16',
+        nome: 'Velas',
+        categoria: 'mecanica',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'media'
+      },
+      {
+        id: 'mec_17',
+        nome: 'Cabos de vela',
+        categoria: 'mecanica',
+        obrigatorio: false,
+        status: 'pendente',
+        prioridade: 'media'
+      },
+      {
+        id: 'mec_18',
+        nome: 'Bobina',
+        categoria: 'mecanica',
         obrigatorio: false,
         status: 'pendente',
         prioridade: 'media'
@@ -303,78 +323,36 @@ export const newChecklistTemplate: CategoriaChecklist[] = [
   },
   {
     id: 'suspensao',
-    nome: 'Suspensão e Direção',
+    nome: '🔩 SUSPENSÃO / DIREÇÃO',
     descricao: 'Verificações do sistema de suspensão e direção',
-    preDiagnostico: [
-      {
-        id: 'suspensao_pre_1',
-        pergunta: 'O veículo apresenta ruídos na suspensão?',
-        tipo: 'sim_nao',
-        obrigatoria: true
-      },
-      {
-        id: 'suspensao_pre_2',
-        pergunta: 'A direção está dura ou com folga?',
-        tipo: 'multipla_escolha',
-        opcoes: ['Normal', 'Dura', 'Com folga', 'Vibra'],
-        obrigatoria: true
-      },
-      {
-        id: 'suspensao_pre_3',
-        pergunta: 'O veículo "balança" muito em lombadas?',
-        tipo: 'sim_nao',
-        obrigatoria: true
-      },
-      {
-        id: 'suspensao_pre_4',
-        pergunta: 'Há desgaste irregular nos pneus?',
-        tipo: 'sim_nao',
-        obrigatoria: true
-      }
-    ],
+    preDiagnostico: [],
     itens: [
       {
-        id: 'suspensao_1',
-        nome: 'Amortecedores dianteiros',
+        id: 'susp_1',
+        nome: 'Amortecedores',
         categoria: 'suspensao',
         obrigatorio: true,
         status: 'pendente',
         prioridade: 'alta'
       },
       {
-        id: 'suspensao_2',
-        nome: 'Amortecedores traseiros',
-        categoria: 'suspensao',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'alta'
-      },
-      {
-        id: 'suspensao_3',
-        nome: 'Molas dianteiras',
+        id: 'susp_2',
+        nome: 'Molas',
         categoria: 'suspensao',
         obrigatorio: true,
         status: 'pendente',
         prioridade: 'media'
       },
       {
-        id: 'suspensao_4',
-        nome: 'Molas traseiras',
+        id: 'susp_3',
+        nome: 'Buchas',
         categoria: 'suspensao',
         obrigatorio: true,
         status: 'pendente',
         prioridade: 'media'
       },
       {
-        id: 'suspensao_5',
-        nome: 'Buchas da suspensão',
-        categoria: 'suspensao',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'media'
-      },
-      {
-        id: 'suspensao_6',
+        id: 'susp_4',
         nome: 'Pivôs',
         categoria: 'suspensao',
         obrigatorio: true,
@@ -382,7 +360,7 @@ export const newChecklistTemplate: CategoriaChecklist[] = [
         prioridade: 'alta'
       },
       {
-        id: 'suspensao_7',
+        id: 'susp_5',
         nome: 'Terminal de direção',
         categoria: 'suspensao',
         obrigatorio: true,
@@ -390,7 +368,7 @@ export const newChecklistTemplate: CategoriaChecklist[] = [
         prioridade: 'critica'
       },
       {
-        id: 'suspensao_8',
+        id: 'susp_6',
         nome: 'Caixa de direção',
         categoria: 'suspensao',
         obrigatorio: true,
@@ -398,15 +376,7 @@ export const newChecklistTemplate: CategoriaChecklist[] = [
         prioridade: 'alta'
       },
       {
-        id: 'suspensao_9',
-        nome: 'Fluido da direção hidráulica',
-        categoria: 'suspensao',
-        obrigatorio: false,
-        status: 'pendente',
-        prioridade: 'media'
-      },
-      {
-        id: 'suspensao_10',
+        id: 'susp_7',
         nome: 'Alinhamento',
         categoria: 'suspensao',
         obrigatorio: true,
@@ -414,7 +384,7 @@ export const newChecklistTemplate: CategoriaChecklist[] = [
         prioridade: 'media'
       },
       {
-        id: 'suspensao_11',
+        id: 'susp_8',
         nome: 'Balanceamento',
         categoria: 'suspensao',
         obrigatorio: true,
@@ -424,191 +394,21 @@ export const newChecklistTemplate: CategoriaChecklist[] = [
     ]
   },
   {
-    id: 'pneus',
-    nome: 'Pneus e Rodas',
-    descricao: 'Verificações completas dos pneus e rodas',
-    preDiagnostico: [
-      {
-        id: 'pneus_pre_1',
-        pergunta: 'Os pneus apresentam desgaste irregular?',
-        tipo: 'sim_nao',
-        obrigatoria: true
-      },
-      {
-        id: 'pneus_pre_2',
-        pergunta: 'Há vibração no volante em alta velocidade?',
-        tipo: 'sim_nao',
-        obrigatoria: true
-      },
-      {
-        id: 'pneus_pre_3',
-        pergunta: 'Algum pneu está "careca" ou com sulcos rasos?',
-        tipo: 'sim_nao',
-        obrigatoria: true
-      },
-      {
-        id: 'pneus_pre_4',
-        pergunta: 'Quando foi feito o último balanceamento?',
-        tipo: 'texto',
-        obrigatoria: false
-      }
-    ],
-    itens: [
-      {
-        id: 'pneus_1',
-        nome: 'Estado dos pneus dianteiros',
-        categoria: 'pneus',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'critica'
-      },
-      {
-        id: 'pneus_2',
-        nome: 'Estado dos pneus traseiros',
-        categoria: 'pneus',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'critica'
-      },
-      {
-        id: 'pneus_3',
-        nome: 'Pressão dos pneus',
-        categoria: 'pneus',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'alta'
-      },
-      {
-        id: 'pneus_4',
-        nome: 'Pneu estepe',
-        categoria: 'pneus',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'media'
-      },
-      {
-        id: 'pneus_5',
-        nome: 'Rodas e aros',
-        categoria: 'pneus',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'media'
-      },
-      {
-        id: 'pneus_6',
-        nome: 'Parafusos das rodas',
-        categoria: 'pneus',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'alta'
-      },
-      {
-        id: 'pneus_7',
-        nome: 'Válvulas dos pneus',
-        categoria: 'pneus',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'media'
-      }
-    ]
-  },
-  {
     id: 'eletrico',
-    nome: 'Sistema Elétrico',
-    descricao: 'Verificações completas do sistema elétrico',
-    preDiagnostico: [
-      {
-        id: 'eletrico_pre_1',
-        pergunta: 'Todas as luzes estão funcionando normalmente?',
-        tipo: 'sim_nao',
-        obrigatoria: true
-      },
-      {
-        id: 'eletrico_pre_2',
-        pergunta: 'A bateria já apresentou problemas recentemente?',
-        tipo: 'sim_nao',
-        obrigatoria: true
-      },
-      {
-        id: 'eletrico_pre_3',
-        pergunta: 'Há dificuldade para dar partida?',
-        tipo: 'sim_nao',
-        obrigatoria: true
-      },
-      {
-        id: 'eletrico_pre_4',
-        pergunta: 'Algum equipamento elétrico não funciona?',
-        tipo: 'texto',
-        obrigatoria: false
-      }
-    ],
+    nome: '🔌 SISTEMA ELÉTRICO / BATERIA',
+    descricao: 'Verificações do sistema elétrico',
+    preDiagnostico: [],
     itens: [
       {
-        id: 'eletrico_1',
-        nome: 'Faróis dianteiros',
+        id: 'elet_1',
+        nome: 'Bateria',
         categoria: 'eletrico',
         obrigatorio: true,
         status: 'pendente',
         prioridade: 'alta'
       },
       {
-        id: 'eletrico_2',
-        nome: 'Lanternas traseiras',
-        categoria: 'eletrico',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'alta'
-      },
-      {
-        id: 'eletrico_3',
-        nome: 'Pisca-alerta',
-        categoria: 'eletrico',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'alta'
-      },
-      {
-        id: 'eletrico_4',
-        nome: 'Luz de freio',
-        categoria: 'eletrico',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'critica'
-      },
-      {
-        id: 'eletrico_5',
-        nome: 'Luz de ré',
-        categoria: 'eletrico',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'media'
-      },
-      {
-        id: 'eletrico_6',
-        nome: 'Buzina',
-        categoria: 'eletrico',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'media'
-      },
-      {
-        id: 'eletrico_7',
-        nome: 'Limpador de para-brisa',
-        categoria: 'eletrico',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'media'
-      },
-      {
-        id: 'eletrico_8',
-        nome: 'Sistema de ignição',
-        categoria: 'eletrico',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'alta'
-      },
-      {
-        id: 'eletrico_9',
+        id: 'elet_2',
         nome: 'Alternador',
         categoria: 'eletrico',
         obrigatorio: true,
@@ -616,7 +416,7 @@ export const newChecklistTemplate: CategoriaChecklist[] = [
         prioridade: 'alta'
       },
       {
-        id: 'eletrico_10',
+        id: 'elet_3',
         nome: 'Motor de partida',
         categoria: 'eletrico',
         obrigatorio: true,
@@ -624,7 +424,7 @@ export const newChecklistTemplate: CategoriaChecklist[] = [
         prioridade: 'alta'
       },
       {
-        id: 'eletrico_11',
+        id: 'elet_4',
         nome: 'Fusíveis',
         categoria: 'eletrico',
         obrigatorio: true,
@@ -632,218 +432,292 @@ export const newChecklistTemplate: CategoriaChecklist[] = [
         prioridade: 'media'
       },
       {
-        id: 'eletrico_12',
-        nome: 'Chicotes elétricos',
+        id: 'elet_5',
+        nome: 'Fiação',
         categoria: 'eletrico',
         obrigatorio: true,
         status: 'pendente',
         prioridade: 'media'
-      }
-    ]
-  },
-  {
-    id: 'transmissao',
-    nome: 'Transmissão',
-    descricao: 'Verificações do sistema de transmissão',
-    preDiagnostico: [
-      {
-        id: 'transmissao_pre_1',
-        pergunta: 'Há dificuldade para engatar as marchas?',
-        tipo: 'sim_nao',
-        obrigatoria: true
       },
       {
-        id: 'transmissao_pre_2',
-        pergunta: 'A embreagem está "patinando"?',
-        tipo: 'sim_nao',
-        obrigatoria: true
-      },
-      {
-        id: 'transmissao_pre_3',
-        pergunta: 'Há ruídos na transmissão?',
-        tipo: 'multipla_escolha',
-        opcoes: ['Não', 'Rangido', 'Chiado', 'Batida'],
-        obrigatoria: true
-      },
-      {
-        id: 'transmissao_pre_4',
-        pergunta: 'O câmbio é automático ou manual?',
-        tipo: 'multipla_escolha',
-        opcoes: ['Manual', 'Automático', 'CVT'],
-        obrigatoria: true
-      }
-    ],
-    itens: [
-      {
-        id: 'transmissao_1',
-        nome: 'Óleo da transmissão',
-        categoria: 'transmissao',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'alta'
-      },
-      {
-        id: 'transmissao_2',
-        nome: 'Filtro da transmissão',
-        categoria: 'transmissao',
+        id: 'elet_6',
+        nome: 'Relés',
+        categoria: 'eletrico',
         obrigatorio: false,
         status: 'pendente',
         prioridade: 'media'
-      },
-      {
-        id: 'transmissao_3',
-        nome: 'Embreagem',
-        categoria: 'transmissao',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'alta'
-      },
-      {
-        id: 'transmissao_4',
-        nome: 'Disco de embreagem',
-        categoria: 'transmissao',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'alta'
-      },
-      {
-        id: 'transmissao_5',
-        nome: 'Platô de embreagem',
-        categoria: 'transmissao',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'alta'
-      },
-      {
-        id: 'transmissao_6',
-        nome: 'Rolamento da embreagem',
-        categoria: 'transmissao',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'media'
-      },
-      {
-        id: 'transmissao_7',
-        nome: 'Cabo ou cilindro da embreagem',
-        categoria: 'transmissao',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'media'
-      },
-      {
-        id: 'transmissao_8',
-        nome: 'Junta homocinética',
-        categoria: 'transmissao',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'alta'
       }
     ]
   },
   {
-    id: 'carroceria',
-    nome: 'Carroceria e Segurança',
-    descricao: 'Verificações de carroceria, estrutura e itens de segurança',
-    preDiagnostico: [
-      {
-        id: 'carroceria_pre_1',
-        pergunta: 'Há sinais visíveis de ferrugem na carroceria?',
-        tipo: 'sim_nao',
-        obrigatoria: true
-      },
-      {
-        id: 'carroceria_pre_2',
-        pergunta: 'Todos os vidros estão em bom estado?',
-        tipo: 'sim_nao',
-        obrigatoria: true
-      },
-      {
-        id: 'carroceria_pre_3',
-        pergunta: 'O veículo já sofreu acidentes?',
-        tipo: 'sim_nao',
-        obrigatoria: false
-      }
-    ],
+    id: 'iluminacao',
+    nome: '💡 ILUMINAÇÃO',
+    descricao: 'Verificações do sistema de iluminação',
+    preDiagnostico: [],
     itens: [
       {
-        id: 'carroceria_1',
-        nome: 'Para-brisa',
-        categoria: 'carroceria',
+        id: 'ilum_1',
+        nome: 'Farol baixo',
+        categoria: 'iluminacao',
         obrigatorio: true,
         status: 'pendente',
         prioridade: 'alta'
       },
       {
-        id: 'carroceria_2',
-        nome: 'Vidros laterais',
-        categoria: 'carroceria',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'media'
-      },
-      {
-        id: 'carroceria_3',
-        nome: 'Vidro traseiro',
-        categoria: 'carroceria',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'media'
-      },
-      {
-        id: 'carroceria_4',
-        nome: 'Retrovisores',
-        categoria: 'carroceria',
+        id: 'ilum_2',
+        nome: 'Farol alto',
+        categoria: 'iluminacao',
         obrigatorio: true,
         status: 'pendente',
         prioridade: 'alta'
       },
       {
-        id: 'carroceria_5',
+        id: 'ilum_3',
+        nome: 'Lanternas traseiras',
+        categoria: 'iluminacao',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'alta'
+      },
+      {
+        id: 'ilum_4',
+        nome: 'Luz de freio',
+        categoria: 'iluminacao',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'critica'
+      },
+      {
+        id: 'ilum_5',
+        nome: 'Setas',
+        categoria: 'iluminacao',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'alta'
+      },
+      {
+        id: 'ilum_6',
+        nome: 'Pisca alerta',
+        categoria: 'iluminacao',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'alta'
+      },
+      {
+        id: 'ilum_7',
+        nome: 'Luz de ré',
+        categoria: 'iluminacao',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'media'
+      },
+      {
+        id: 'ilum_8',
+        nome: 'Luz da placa',
+        categoria: 'iluminacao',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'media'
+      }
+    ]
+  },
+  {
+    id: 'seguranca',
+    nome: '🔐 SEGURANÇA',
+    descricao: 'Verificações de segurança',
+    preDiagnostico: [],
+    itens: [
+      {
+        id: 'seg_1',
         nome: 'Cintos de segurança',
-        categoria: 'carroceria',
+        categoria: 'seguranca',
         obrigatorio: true,
         status: 'pendente',
         prioridade: 'critica'
       },
       {
-        id: 'carroceria_6',
+        id: 'seg_2',
         nome: 'Airbags',
-        categoria: 'carroceria',
+        categoria: 'seguranca',
         obrigatorio: false,
         status: 'pendente',
         prioridade: 'alta'
       },
       {
-        id: 'carroceria_7',
-        nome: 'Estrutura da carroceria',
-        categoria: 'carroceria',
-        obrigatorio: true,
-        status: 'pendente',
-        prioridade: 'critica'
-      },
-      {
-        id: 'carroceria_8',
-        nome: 'Fechaduras das portas',
-        categoria: 'carroceria',
+        id: 'seg_3',
+        nome: 'Extintor',
+        categoria: 'seguranca',
         obrigatorio: true,
         status: 'pendente',
         prioridade: 'media'
       },
       {
-        id: 'carroceria_9',
-        nome: 'Maçanetas',
-        categoria: 'carroceria',
+        id: 'seg_4',
+        nome: 'Triângulo',
+        categoria: 'seguranca',
         obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'media'
+      }
+    ]
+  },
+  {
+    id: 'acessorios',
+    nome: '🎧 ACESSÓRIOS',
+    descricao: 'Verificações dos acessórios do veículo',
+    preDiagnostico: [],
+    itens: [
+      {
+        id: 'ace_1',
+        nome: 'Ar condicionado',
+        categoria: 'acessorios',
+        obrigatorio: false,
+        status: 'pendente',
+        prioridade: 'media'
+      },
+      {
+        id: 'ace_2',
+        nome: 'Aquecedor',
+        categoria: 'acessorios',
+        obrigatorio: false,
+        status: 'pendente',
+        prioridade: 'media'
+      },
+      {
+        id: 'ace_3',
+        nome: 'Desembaçador traseiro',
+        categoria: 'acessorios',
+        obrigatorio: false,
         status: 'pendente',
         prioridade: 'baixa'
       },
       {
-        id: 'carroceria_10',
-        nome: 'Capô e porta-malas',
-        categoria: 'carroceria',
+        id: 'ace_4',
+        nome: 'Limpador de para-brisa',
+        categoria: 'acessorios',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'alta'
+      },
+      {
+        id: 'ace_5',
+        nome: 'Esguicho do para-brisa',
+        categoria: 'acessorios',
         obrigatorio: true,
         status: 'pendente',
         prioridade: 'media'
+      },
+      {
+        id: 'ace_6',
+        nome: 'Buzina',
+        categoria: 'acessorios',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'media'
+      },
+      {
+        id: 'ace_7',
+        nome: 'Rádio/Som',
+        categoria: 'acessorios',
+        obrigatorio: false,
+        status: 'pendente',
+        prioridade: 'baixa'
+      },
+      {
+        id: 'ace_8',
+        nome: 'Acendedor de cigarros',
+        categoria: 'acessorios',
+        obrigatorio: false,
+        status: 'pendente',
+        prioridade: 'baixa'
+      },
+      {
+        id: 'ace_9',
+        nome: 'Vidros elétricos',
+        categoria: 'acessorios',
+        obrigatorio: false,
+        status: 'pendente',
+        prioridade: 'baixa'
+      },
+      {
+        id: 'ace_10',
+        nome: 'Travas elétricas',
+        categoria: 'acessorios',
+        obrigatorio: false,
+        status: 'pendente',
+        prioridade: 'baixa'
+      },
+      {
+        id: 'ace_11',
+        nome: 'Alarme',
+        categoria: 'acessorios',
+        obrigatorio: false,
+        status: 'pendente',
+        prioridade: 'baixa'
+      },
+      {
+        id: 'ace_12',
+        nome: 'Trava de direção',
+        categoria: 'acessorios',
+        obrigatorio: false,
+        status: 'pendente',
+        prioridade: 'baixa'
+      },
+      {
+        id: 'ace_13',
+        nome: 'Painel de instrumentos',
+        categoria: 'acessorios',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'alta'
+      },
+      {
+        id: 'ace_14',
+        nome: 'Luz interna',
+        categoria: 'acessorios',
+        obrigatorio: true,
+        status: 'pendente',
+        prioridade: 'media'
+      },
+      {
+        id: 'ace_15',
+        nome: 'Espelhos elétricos',
+        categoria: 'acessorios',
+        obrigatorio: false,
+        status: 'pendente',
+        prioridade: 'baixa'
+      },
+      {
+        id: 'ace_16',
+        nome: 'GPS/Multimídia',
+        categoria: 'acessorios',
+        obrigatorio: false,
+        status: 'pendente',
+        prioridade: 'baixa'
+      }
+    ]
+  },
+  {
+    id: 'higienizacao',
+    nome: '🧼 HIGIENIZAÇÃO',
+    descricao: 'Verificações de limpeza e higienização',
+    preDiagnostico: [],
+    itens: [
+      {
+        id: 'hig_1',
+        nome: 'Limpeza externa',
+        categoria: 'higienizacao',
+        obrigatorio: false,
+        status: 'pendente',
+        prioridade: 'baixa'
+      },
+      {
+        id: 'hig_2',
+        nome: 'Limpeza interna',
+        categoria: 'higienizacao',
+        obrigatorio: false,
+        status: 'pendente',
+        prioridade: 'baixa'
       }
     ]
   }
