@@ -21,7 +21,7 @@ const Index = () => {
             </div>
             <div className="flex space-x-3">
               <Link to="/cliente/dashboard">
-                <Button className="bg-[#FF5722] hover:bg-[#FF5722]/90">
+                <Button className="bg-[#FF5722] hover:bg-[#FF5722]/90 text-white hover:text-white">
                   Acessar Painel do Cliente
                 </Button>
               </Link>
