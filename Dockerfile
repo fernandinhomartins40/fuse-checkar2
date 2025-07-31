@@ -48,6 +48,9 @@ COPY --from=builder --chown=nodejs:nodejs /app/backend ./backend
 # Copiar build do frontend do estágio anterior
 COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 
+# Copiar aplicação HTML
+COPY --from=builder --chown=nodejs:nodejs /app/html-app ./html-app
+
 # Criar pasta de logs
 RUN mkdir -p /app/logs && chown -R nodejs:nodejs /app/logs
 
@@ -62,8 +65,8 @@ ENV PORT=3005
 EXPOSE 3005
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD node -e "const http = require('http'); const options = { host: 'localhost', port: 3005, path: '/api/health', timeout: 2000 }; const req = http.get(options, (res) => { if (res.statusCode === 200) process.exit(0); else process.exit(1); }); req.on('error', () => process.exit(1)); req.end();"
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD node -e "const http = require('http'); const options = { host: '0.0.0.0', port: 3005, path: '/health', timeout: 5000 }; const req = http.get(options, (res) => { if (res.statusCode === 200) process.exit(0); else process.exit(1); }); req.on('error', () => process.exit(1)); req.end();"
 
 # Usar dumb-init para gerenciar sinais corretamente
 ENTRYPOINT ["dumb-init", "--"]
