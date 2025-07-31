@@ -7,8 +7,8 @@ WORKDIR /app
 # Copiar package.json e package-lock.json do frontend
 COPY package*.json ./
 
-# Instalar dependências do frontend
-RUN npm ci --only=production && npm cache clean --force
+# Instalar dependências do frontend (incluindo dev para build)
+RUN npm ci && npm cache clean --force
 
 # Copiar código fonte do frontend
 COPY . .
@@ -16,10 +16,10 @@ COPY . .
 # Build do frontend React+Vite
 RUN npm run build
 
-# Instalar dependências do backend
+# Instalar dependências do backend (apenas produção)
 WORKDIR /app/backend
 COPY backend/package*.json ./
-RUN npm ci --only=production && npm cache clean --force
+RUN npm ci --omit=dev && npm cache clean --force
 
 # ================================
 # Estágio de produção
