@@ -1,14 +1,19 @@
 # Multi-stage build para otimizar tamanho da imagem
 FROM node:18-alpine AS builder
 
+# Instalar dependências do sistema necessárias
+RUN apk add --no-cache python3 make g++
+
 # Definir diretório de trabalho
 WORKDIR /app
 
 # Copiar package.json e package-lock.json do frontend
 COPY package*.json ./
 
-# Instalar dependências do frontend (incluindo dev para build)
-RUN npm ci && npm cache clean --force
+# Limpar cache npm e instalar dependências do frontend
+RUN npm cache clean --force && \
+    npm install --verbose && \
+    npm cache clean --force
 
 # Copiar código fonte do frontend
 COPY . .
@@ -19,7 +24,9 @@ RUN npm run build
 # Instalar dependências do backend (apenas produção)
 WORKDIR /app/backend
 COPY backend/package*.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+RUN npm cache clean --force && \
+    npm install --production --verbose && \
+    npm cache clean --force
 
 # ================================
 # Estágio de produção
