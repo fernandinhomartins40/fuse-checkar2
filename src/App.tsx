@@ -39,16 +39,33 @@ import VeiculoEditar from "./pages/VeiculoEditar";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Landing Page */}
-            <Route path="/" element={<Landing />} />
+const App = () => {
+  console.log('🚀 App component rendering...');
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              {/* Landing Page */}
+              <Route path="/" element={<Landing />} />
+            
+            {/* Debug Route - Temporary */}
+            <Route path="/debug" element={
+              <div style={{padding: '20px', textAlign: 'center'}}>
+                <h1 style={{color: '#0F3460', fontSize: '2rem', marginBottom: '1rem'}}>🟢 React Funcionando!</h1>
+                <p>Esta é uma rota de teste para verificar se o React Router está funcionando.</p>
+                <p>Timestamp: {new Date().toLocaleString()}</p>
+                <div style={{marginTop: '20px'}}>
+                  <a href="/" style={{color: '#FF5722', textDecoration: 'none', padding: '10px 20px', border: '2px solid #FF5722', borderRadius: '5px'}}>
+                    Ir para Landing Page
+                  </a>
+                </div>
+              </div>
+            } />
             
             {/* Authentication Routes */}
             <Route path="/admin/login" element={<AdminLogin />} />
@@ -86,6 +103,7 @@ const App = () => (
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;

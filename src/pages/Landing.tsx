@@ -8,6 +8,8 @@ import Testimonials from '../components/landing/Testimonials';
 import CallToAction from '../components/landing/CallToAction';
 
 const Landing = () => {
+  console.log('🏠 Landing component rendering...');
+  
   return (
     <div className="min-h-screen bg-white">
       <LandingHeader />
