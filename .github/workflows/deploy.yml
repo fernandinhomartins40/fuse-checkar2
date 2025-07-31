@@ -272,43 +272,37 @@ jobs:
     - name: 🌐 Configurar Nginx
       run: |
         echo "🌐 Configurando Nginx..."
-        sshpass -p '${{ secrets.VPS_PASSWORD }}' ssh -o StrictHostKeyChecking=no ${{ env.VPS_USER }}@${{ env.VPS_HOST }} '
-          echo "🌐 Criando configuração do Nginx..."
+        sshpass -p '${{ secrets.VPS_PASSWORD }}' ssh -o StrictHostKeyChecking=no ${{ env.VPS_USER }}@${{ env.VPS_HOST }} "
+          echo '🌐 Criando configuração do Nginx...'
           
-          # Criar configuração do Nginx
-          cat > /etc/nginx/sites-available/fuse-checkar2 << EOF
-server {
-    listen 80;
-    server_name 31.97.85.98 _;
-    
-    # Servir aplicação React+Express via Docker
-    location / {
-        proxy_pass http://127.0.0.1:3005;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_cache_bypass \$http_upgrade;
-        proxy_connect_timeout 30s;
-        proxy_send_timeout 30s;
-        proxy_read_timeout 30s;
-        
-        # Headers específicos para Docker
-        proxy_set_header X-Forwarded-Host \$host;
-        proxy_set_header X-Forwarded-Server \$host;
-    }
-    
-    # Health check
-    location /health {
-        access_log off;
-        return 200 "healthy";
-        add_header Content-Type text/plain;
-    }
-}
-EOF
+          # Criar configuração do Nginx usando echo
+          echo 'server {' > /etc/nginx/sites-available/fuse-checkar2
+          echo '    listen 80;' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '    server_name 31.97.85.98 _;' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '    ' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '    # Servir aplicação React+Express via Docker' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '    location / {' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '        proxy_pass http://127.0.0.1:3005;' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '        proxy_http_version 1.1;' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '        proxy_set_header Upgrade \$http_upgrade;' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '        proxy_set_header Connection \"upgrade\";' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '        proxy_set_header Host \$host;' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '        proxy_set_header X-Real-IP \$remote_addr;' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '        proxy_set_header X-Forwarded-Proto \$scheme;' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '        proxy_cache_bypass \$http_upgrade;' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '        proxy_connect_timeout 30s;' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '        proxy_send_timeout 30s;' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '        proxy_read_timeout 30s;' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '    }' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '    ' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '    # Health check' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '    location /health {' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '        access_log off;' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '        return 200 \"healthy\";' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '        add_header Content-Type text/plain;' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '    }' >> /etc/nginx/sites-available/fuse-checkar2
+          echo '}' >> /etc/nginx/sites-available/fuse-checkar2
           
           # Habilitar site e remover default
           ln -sf /etc/nginx/sites-available/fuse-checkar2 /etc/nginx/sites-enabled/
@@ -316,15 +310,15 @@ EOF
           
           # Testar configuração
           if /usr/sbin/nginx -t; then
-            echo "✅ Configuração do Nginx válida"
+            echo '✅ Configuração do Nginx válida'
             systemctl reload nginx || systemctl restart nginx
-            echo "✅ Nginx reconfigurado"
+            echo '✅ Nginx reconfigurado'
           else
-            echo "❌ Erro na configuração do Nginx"
+            echo '❌ Erro na configuração do Nginx'
             /usr/sbin/nginx -t
             exit 1
           fi
-        '
+        "
 
     - name: 🚀 Iniciar Aplicação com Docker
       run: |
