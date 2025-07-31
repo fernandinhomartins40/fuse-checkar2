@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHECAR - Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #0F3460, #FF5722);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        h1 { font-size: 3rem; margin-bottom: 1rem; }
+        p { font-size: 1.2rem; margin-bottom: 2rem; }
+        .btn {
+            background: #FF5722;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover { opacity: 0.9; }
+        .status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="status">✅ Teste Simples - Funcionando</div>
+    
+    <h1>🚗 CHECAR</h1>
+    <p>Sistema de Revisão Automotiva</p>
+    <p>Esta é uma versão de teste simplificada.</p>
+    
+    <div>
+        <a href="/admin/login" class="btn">Painel Admin</a>
+        <a href="/cliente/dashboard" class="btn">Portal Cliente</a>
+    </div>
+    
+    <div style="margin-top: 40px; font-size: 0.9rem; opacity: 0.8;">
+        <p>Se você está vendo esta página, o servidor está funcionando corretamente.</p>
+        <p>O problema pode estar no JavaScript React da aplicação principal.</p>
+    </div>
+
+    <script>
+        console.log('✅ Teste simples carregado com sucesso');
+        
+        // Verificar se consegue acessar a API
+        fetch('/api/health')
+            .then(response => response.json())
+            .then(data => {
+                console.log('✅ API Health:', data);
+                document.querySelector('.status').innerHTML += '<br>✅ API OK';
+            })
+            .catch(error => {
+                console.log('❌ API Error:', error);
+                document.querySelector('.status').innerHTML += '<br>❌ API Error';
+            });
+    </script>
+</body>
+</html>
