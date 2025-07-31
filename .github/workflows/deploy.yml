@@ -212,7 +212,14 @@ jobs:
           # Clone ou pull
           if [ ! -d .git ]; then
             echo '🆕 Clonando repositório...'
-            git clone https://github.com/SEU_USUARIO/fuse-checkar2.git .
+            git clone https://github.com/fernandinhomartins40/fuse-checkar2.git . || {
+              echo '❌ Falha no clone - tentando com método alternativo...'
+              rm -rf .git
+              git init
+              git remote add origin https://github.com/fernandinhomartins40/fuse-checkar2.git
+              git fetch origin main
+              git checkout -b main origin/main
+            }
           else
             echo '📥 Atualizando repositório...'
             git fetch origin
@@ -247,14 +254,17 @@ jobs:
         sshpass -p '${{ secrets.VPS_PASSWORD }}' ssh -o StrictHostKeyChecking=no ${{ env.VPS_USER }}@${{ env.VPS_HOST }} "
           cd ${{ env.DEPLOY_DIR }}
           
+          echo '🏗️ Verificando arquivos Docker...'
+          ls -la docker-compose.yml Dockerfile
+          
           echo '🏗️ Parando containers existentes...'
-          docker-compose down --remove-orphans || docker compose down --remove-orphans || true
+          docker-compose -f docker-compose.yml down --remove-orphans 2>/dev/null || docker compose -f docker-compose.yml down --remove-orphans 2>/dev/null || true
           
           echo '🧹 Limpando imagens antigas...'
           docker image prune -f
           
           echo '🏗️ Construindo nova imagem Docker...'
-          docker-compose build --no-cache fuse-checkar2 || docker compose build --no-cache fuse-checkar2
+          docker-compose -f docker-compose.yml build --no-cache fuse-checkar2 || docker compose -f docker-compose.yml build --no-cache fuse-checkar2
           
           if [ \$? -eq 0 ]; then
             echo '✅ Build da imagem Docker concluído'
@@ -327,7 +337,7 @@ jobs:
           cd ${{ env.DEPLOY_DIR }}
           
           echo '🐳 Iniciando containers...'
-          docker-compose up -d fuse-checkar2 || docker compose up -d fuse-checkar2
+          docker-compose -f docker-compose.yml up -d fuse-checkar2 || docker compose -f docker-compose.yml up -d fuse-checkar2
           
           echo '⏳ Aguardando inicialização...'
           sleep 20
@@ -338,16 +348,16 @@ jobs:
             docker ps | grep '${{ env.APP_NAME }}-app'
             
             echo '📋 Status do container:'
-            docker-compose ps fuse-checkar2 || docker compose ps fuse-checkar2
+            docker-compose -f docker-compose.yml ps fuse-checkar2 || docker compose -f docker-compose.yml ps fuse-checkar2
             
             echo '📋 Logs da aplicação:'
-            docker-compose logs --tail=20 fuse-checkar2 || docker compose logs --tail=20 fuse-checkar2
+            docker-compose -f docker-compose.yml logs --tail=20 fuse-checkar2 || docker compose -f docker-compose.yml logs --tail=20 fuse-checkar2
           else
             echo '❌ Container não ficou online'
             echo '📋 Containers ativos:'
             docker ps -a
             echo '📋 Logs completos:'
-            docker-compose logs fuse-checkar2 || docker compose logs fuse-checkar2
+            docker-compose -f docker-compose.yml logs fuse-checkar2 || docker compose -f docker-compose.yml logs fuse-checkar2
             exit 1
           fi
           
@@ -363,7 +373,7 @@ jobs:
             
             if [ \$i -eq 6 ]; then
               echo '❌ Health check falhou após 60 segundos'
-              docker-compose logs --tail=50 fuse-checkar2 || docker compose logs --tail=50 fuse-checkar2
+              docker-compose -f docker-compose.yml logs --tail=50 fuse-checkar2 || docker compose -f docker-compose.yml logs --tail=50 fuse-checkar2
               exit 1
             fi
           done
@@ -376,7 +386,7 @@ jobs:
           cd ${{ env.DEPLOY_DIR }}
           
           echo '=== Status dos Containers ==='
-          docker-compose ps || docker compose ps
+          docker-compose -f docker-compose.yml ps || docker compose -f docker-compose.yml ps
           
           echo ''
           echo '=== Informações do Container ==='
@@ -396,7 +406,7 @@ jobs:
             
             if [ \$i -eq 5 ]; then
               echo '❌ API não responde após 15 segundos'
-              docker-compose logs --tail=30 fuse-checkar2 || docker compose logs --tail=30 fuse-checkar2
+              docker-compose -f docker-compose.yml logs --tail=30 fuse-checkar2 || docker compose -f docker-compose.yml logs --tail=30 fuse-checkar2
             fi
           done
           
