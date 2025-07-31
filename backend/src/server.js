@@ -54,25 +54,43 @@ app.use((req, res, next) => {
 // Rotas da API sempre em /api/*
 app.use('/api', apiRoutes);
 
-// Em produção, servir arquivos estáticos do build React
+// Servir arquivos estáticos da aplicação HTML
+const htmlAppPath = path.join(__dirname, '../../html-app');
+app.use(express.static(htmlAppPath));
+
+// Em produção, também servir arquivos do build React como fallback
 if (NODE_ENV === 'production') {
   const buildPath = path.join(__dirname, '../../dist');
-  app.use(express.static(buildPath));
   
-  // SPA fallback - todas as rotas não-API retornam o index.html
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(buildPath, 'index.html'));
+  // Middleware para detectar se o arquivo existe na pasta html-app
+  app.use((req, res, next) => {
+    // Se for uma rota da API, pular
+    if (req.path.startsWith('/api/')) {
+      return next();
+    }
+    
+    // Verificar se o arquivo existe na pasta html-app
+    const htmlFilePath = path.join(htmlAppPath, req.path);
+    const fs = require('fs');
+    
+    if (fs.existsSync(htmlFilePath) && fs.statSync(htmlFilePath).isFile()) {
+      // Arquivo existe na pasta html-app, servir dali
+      return res.sendFile(htmlFilePath);
+    }
+    
+    // Arquivo não existe, continuar para o próximo middleware
+    next();
   });
-} else {
-  // Em desenvolvimento, rota simples de status
-  app.get('/', (req, res) => {
-    res.json({ 
-      message: 'Backend funcionando!', 
-      environment: NODE_ENV,
-      timestamp: new Date().toISOString()
-    });
-  });
+  
+  // Servir arquivos estáticos do build React como fallback
+  app.use(express.static(buildPath));
 }
+
+// SPA fallback - todas as rotas não-API retornam o index.html da aplicação HTML
+app.get('*', (req, res) => {
+  const htmlIndexPath = path.join(htmlAppPath, 'index.html');
+  res.sendFile(htmlIndexPath);
+});
 
 // Middleware de tratamento de erros
 app.use((err, req, res, next) => {
@@ -84,10 +102,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Middleware para rotas não encontradas
-app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Rota não encontrada' });
-});
+// Remover middleware de 404 pois agora temos SPA fallback
 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);

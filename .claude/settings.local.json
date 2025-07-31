@@ -9,7 +9,12 @@
       "Bash(npm install)",
       "Bash(docker-compose:*)",
       "Bash(npm run build:*)",
-      "Bash(NODE_ENV=production npm start)"
+      "Bash(NODE_ENV=production npm start)",
+      "WebFetch(domain:31.97.85.98)",
+      "Bash(curl:*)",
+      "Bash(npm start)",
+      "Bash(taskkill:*)",
+      "Bash(powershell:*)"
     ],
     "deny": []
   }
