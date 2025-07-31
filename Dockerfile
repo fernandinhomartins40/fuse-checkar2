@@ -36,6 +36,7 @@ FROM node:18-alpine AS production
 # Instalar dependências do sistema necessárias
 RUN apk add --no-cache \
     dumb-init \
+    wget \
     && addgroup -g 1001 -S nodejs \
     && adduser -S nodejs -u 1001
 
@@ -66,7 +67,7 @@ EXPOSE 3005
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD node -e "const http = require('http'); const options = { host: '0.0.0.0', port: 3005, path: '/health', timeout: 5000 }; const req = http.get(options, (res) => { if (res.statusCode === 200) process.exit(0); else process.exit(1); }); req.on('error', () => process.exit(1)); req.end();"
+    CMD wget --no-verbose --tries=1 --spider http://localhost:3005/health || exit 1
 
 # Usar dumb-init para gerenciar sinais corretamente
 ENTRYPOINT ["dumb-init", "--"]
