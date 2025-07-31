@@ -343,7 +343,7 @@ jobs:
           sleep 20
           
           # Verificar se container está rodando
-          if docker ps | grep -q '${{ env.APP_NAME }}-app.*Up'; then
+          if docker ps | grep -q '${{ env.APP_NAME }}-app'; then
             echo '✅ Container iniciado com sucesso'
             docker ps | grep '${{ env.APP_NAME }}-app'
             
