@@ -274,7 +274,7 @@ jobs:
         echo "🌐 Configurando Nginx..."
         sshpass -p '${{ secrets.VPS_PASSWORD }}' ssh -o StrictHostKeyChecking=no ${{ env.VPS_USER }}@${{ env.VPS_HOST }} "
           echo '🌐 Criando configuração do Nginx...'
-          cat > /etc/nginx/sites-available/fuse-checkar2 << 'EOF'
+          cat > /etc/nginx/sites-available/fuse-checkar2 << 'NGINX_EOF'
 server {
     listen 80;
     server_name 31.97.85.98 _;
@@ -306,7 +306,7 @@ server {
         add_header Content-Type text/plain;
     }
 }
-EOF
+NGINX_EOF
           
           # Habilitar site e remover default
           ln -sf /etc/nginx/sites-available/fuse-checkar2 /etc/nginx/sites-enabled/
