@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Debug - CHECAR</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .debug { background: #f0f0f0; padding: 10px; margin: 10px 0; border-left: 4px solid #007cba; }
+        .error { background: #ffebee; border-left-color: #f44336; }
+        .success { background: #e8f5e8; border-left-color: #4caf50; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug - CHECAR System</h1>
+    
+    <div class="debug success">
+        <h3>✅ HTML Carregado</h3>
+        <p>Esta página HTML está sendo servida corretamente.</p>
+    </div>
+
+    <div class="debug" id="css-check">
+        <h3>⏳ Verificando CSS...</h3>
+        <p>Testando se os estilos externos carregam.</p>
+    </div>
+
+    <div class="debug" id="js-check">
+        <h3>⏳ Verificando JavaScript...</h3>
+        <p>Testando se o JavaScript está executando.</p>
+    </div>
+
+    <div class="debug" id="react-check">
+        <h3>⏳ Verificando React...</h3>
+        <p>Testando se o React consegue renderizar.</p>
+        <div id="react-test"></div>
+    </div>
+
+    <!-- Teste de CSS externo -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    
+    <!-- Teste dos assets da aplicação -->
+    <link rel="stylesheet" href="/assets/index-DS92uwch.css">
+    
+    <script>
+        console.log('🟢 JavaScript básico funcionando!');
+        
+        // Teste de CSS
+        setTimeout(() => {
+            const cssCheck = document.getElementById('css-check');
+            cssCheck.className = 'debug success';
+            cssCheck.innerHTML = '<h3>✅ CSS Básico OK</h3><p>JavaScript consegue manipular o DOM.</p>';
+        }, 100);
+
+        // Teste de carregamento de assets
+        setTimeout(() => {
+            const jsCheck = document.getElementById('js-check');
+            jsCheck.className = 'debug success';
+            jsCheck.innerHTML = '<h3>✅ JavaScript OK</h3><p>Scripts estão executando normalmente.</p>';
+        }, 200);
+
+        // Teste se React está disponível
+        setTimeout(() => {
+            const reactCheck = document.getElementById('react-check');
+            if (typeof React !== 'undefined') {
+                reactCheck.className = 'debug success';
+                reactCheck.innerHTML = '<h3>✅ React Disponível</h3><p>React está carregado globalmente.</p>';
+            } else {
+                reactCheck.className = 'debug error';
+                reactCheck.innerHTML = '<h3>❌ React Não Encontrado</h3><p>React não está disponível globalmente - isso é normal para apps modulares.</p>';
+            }
+        }, 300);
+
+        // Teste do GPT Engineer
+        setTimeout(() => {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.gpteng.co/gptengineer.js';
+            script.type = 'module';
+            script.onload = () => {
+                console.log('✅ GPT Engineer carregado com sucesso');
+                document.body.insertAdjacentHTML('beforeend', 
+                    '<div class="debug success"><h3>✅ GPT Engineer OK</h3><p>Script externo carregou corretamente.</p></div>'
+                );
+            };
+            script.onerror = () => {
+                console.log('❌ Erro ao carregar GPT Engineer');
+                document.body.insertAdjacentHTML('beforeend', 
+                    '<div class="debug error"><h3>❌ GPT Engineer ERRO</h3><p>Não foi possível carregar o script externo.</p></div>'
+                );
+            };
+            document.head.appendChild(script);
+        }, 500);
+
+        // Teste de carregamento do app principal
+        setTimeout(() => {
+            const mainScript = document.createElement('script');
+            mainScript.src = '/assets/index-BZHLalfd.js';
+            mainScript.type = 'module';
+            mainScript.onload = () => {
+                console.log('✅ App principal carregado');
+                document.body.insertAdjacentHTML('beforeend', 
+                    '<div class="debug success"><h3>✅ App Principal OK</h3><p>JavaScript principal da aplicação carregou.</p></div>'
+                );
+                
+                // Verificar se algo renderizou no root
+                setTimeout(() => {
+                    const root = document.getElementById('root');
+                    if (root && root.children.length > 0) {
+                        document.body.insertAdjacentHTML('beforeend', 
+                            '<div class="debug success"><h3>✅ React App Renderizado</h3><p>A aplicação React renderizou conteúdo no #root.</p></div>'
+                        );
+                    } else {
+                        document.body.insertAdjacentHTML('beforeend', 
+                            '<div class="debug error"><h3>❌ React App NÃO Renderizou</h3><p>O #root está vazio - possível erro no React.</p></div>'
+                        );
+                    }
+                }, 1000);
+            };
+            mainScript.onerror = () => {
+                console.log('❌ Erro ao carregar app principal');
+                document.body.insertAdjacentHTML('beforeend', 
+                    '<div class="debug error"><h3>❌ App Principal ERRO</h3><p>Erro ao carregar o JavaScript principal.</p></div>'
+                );
+            };
+            document.head.appendChild(mainScript);
+        }, 800);
+    </script>
+
+    <!-- Adicionar um div root para teste -->
+    <div id="root" style="border: 2px dashed #ccc; padding: 20px; margin: 20px 0; min-height: 50px;">
+        <p style="color: #666; font-style: italic;">Aguardando React renderizar...</p>
+    </div>
+
+</body>
+</html>
