@@ -272,9 +272,11 @@ jobs:
     - name: 🌐 Configurar Nginx
       run: |
         echo "🌐 Configurando Nginx..."
-        sshpass -p '${{ secrets.VPS_PASSWORD }}' ssh -o StrictHostKeyChecking=no ${{ env.VPS_USER }}@${{ env.VPS_HOST }} "
-          echo '🌐 Criando configuração do Nginx...'
-          cat > /etc/nginx/sites-available/fuse-checkar2 << 'NGINX_EOF'
+        sshpass -p '${{ secrets.VPS_PASSWORD }}' ssh -o StrictHostKeyChecking=no ${{ env.VPS_USER }}@${{ env.VPS_HOST }} '
+          echo "🌐 Criando configuração do Nginx..."
+          
+          # Criar configuração do Nginx
+          cat > /etc/nginx/sites-available/fuse-checkar2 << EOF
 server {
     listen 80;
     server_name 31.97.85.98 _;
@@ -284,7 +286,7 @@ server {
         proxy_pass http://127.0.0.1:3005;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection \"upgrade\";
+        proxy_set_header Connection "upgrade";
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
@@ -302,11 +304,11 @@ server {
     # Health check
     location /health {
         access_log off;
-        return 200 \"healthy\";
+        return 200 "healthy";
         add_header Content-Type text/plain;
     }
 }
-NGINX_EOF
+EOF
           
           # Habilitar site e remover default
           ln -sf /etc/nginx/sites-available/fuse-checkar2 /etc/nginx/sites-enabled/
@@ -314,15 +316,15 @@ NGINX_EOF
           
           # Testar configuração
           if /usr/sbin/nginx -t; then
-            echo '✅ Configuração do Nginx válida'
+            echo "✅ Configuração do Nginx válida"
             systemctl reload nginx || systemctl restart nginx
-            echo '✅ Nginx reconfigurado'
+            echo "✅ Nginx reconfigurado"
           else
-            echo '❌ Erro na configuração do Nginx'
+            echo "❌ Erro na configuração do Nginx"
             /usr/sbin/nginx -t
             exit 1
           fi
-        "
+        '
 
     - name: 🚀 Iniciar Aplicação com Docker
       run: |
