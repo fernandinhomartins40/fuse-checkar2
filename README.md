@@ -1,73 +1,332 @@
-# Welcome to your Lovable project
+# 🚗 Fuse Checkar2 - Sistema de Revisão para Auto Centers
 
-## Project info
+Sistema completo de gestão de revisões automotivas para Auto Centers, desenvolvido com frontend em Vanilla HTML/CSS/JavaScript.
 
-**URL**: https://lovable.dev/projects/a4cd1c20-3931-42f5-b59d-669b68fd8a99
+---
 
-## How can I edit this code?
+## 📋 Sobre o Projeto
 
-There are several ways of editing your application.
+O **Fuse Checkar2** é um sistema web moderno para gerenciamento de revisões automotivas, oferecendo:
 
-**Use Lovable**
+- ✅ **Portal do Cliente**: Acompanhamento de veículos e histórico de revisões
+- ✅ **Painel Administrativo**: Gestão completa de clientes, veículos e revisões
+- ✅ **Sistema de Checklist**: Verificação detalhada de componentes automotivos
+- ✅ **Relatórios**: Análise de dados e métricas do negócio
+- ✅ **Responsivo**: Interface adaptada para desktop e mobile
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/a4cd1c20-3931-42f5-b59d-669b68fd8a99) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🏗️ Arquitetura
 
-**Use your preferred IDE**
+### Frontend (Ativo)
+- **Localização**: `/html-app/`
+- **Tecnologia**: Vanilla JavaScript (ES6+), HTML5, CSS3
+- **Arquitetura**: SPA (Single Page Application)
+- **Router**: Sistema customizado com suporte a parâmetros dinâmicos
+- **Autenticação**: localStorage com suporte a múltiplos papéis (cliente/admin)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Frontend React (Legado)
+- **Localização**: `/src/`
+- **Tecnologia**: React 18 + TypeScript + Tailwind CSS
+- **Mantido para referência**: Não está em uso ativo
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Backend
+⚠️ **Backend removido** - O projeto está preparado para integração com um novo backend.
 
-Follow these steps:
+📖 **[Guia de Integração do Backend](./INTEGRACAO_BACKEND.md)**
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 🚀 Começando
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Pré-requisitos
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+- Node.js >= 18.0.0
+- npm ou yarn
+- Docker (opcional, para deploy)
+
+### Instalação
+
+```bash
+# Clone o repositório
+git clone https://github.com/fernandinhomartins40/fuse-checkar2.git
+
+# Entre no diretório
+cd fuse-checkar2
+
+# Instale as dependências
+npm install
 ```
 
-**Edit a file directly in GitHub**
+### Desenvolvimento
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+# Inicie o servidor de desenvolvimento (React)
+npm run dev
 
-**Use GitHub Codespaces**
+# Ou sirva apenas o frontend HTML estático
+npm run serve
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+O frontend estará disponível em `http://localhost:3005`
 
-## What technologies are used for this project?
+### Build de Produção
 
-This project is built with:
+```bash
+# Build do React (se estiver usando)
+npm run build
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+# Para servir o frontend estático, use o Docker
+docker-compose up -d
+```
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/a4cd1c20-3931-42f5-b59d-669b68fd8a99) and click on Share -> Publish.
+## 🐳 Docker
 
-## Can I connect a custom domain to my Lovable project?
+### Build e Deploy
 
-Yes, you can!
+```bash
+# Build da imagem
+docker build -t fuse-checkar2 .
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+# Executar com Docker Compose
+docker-compose up -d
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### Configuração Docker
+
+O projeto usa **nginx** para servir os arquivos estáticos do frontend:
+
+- **Porta**: 3005 (mapeada para 80 do container)
+- **Health Check**: Verificação automática a cada 30s
+- **Recursos**: Limitados a 128M RAM e 0.2 CPU
+
+---
+
+## 📁 Estrutura do Projeto
+
+```
+fuse-checkar2/
+├── html-app/                    # Frontend ativo (Vanilla JS)
+│   ├── assets/
+│   │   ├── css/                 # Estilos
+│   │   ├── js/
+│   │   │   ├── config.js        # ⚙️ Configuração da API
+│   │   │   ├── core/            # Sistema core
+│   │   │   │   ├── api.js       # HTTP Client
+│   │   │   │   ├── auth.js      # Autenticação
+│   │   │   │   ├── router.js    # Router SPA
+│   │   │   │   └── middleware.js
+│   │   │   ├── pages/           # Páginas da aplicação
+│   │   │   └── main.js          # Entry point
+│   │   └── images/
+│   └── index.html               # HTML principal
+│
+├── src/                         # Frontend React (legado)
+│   ├── components/              # Componentes React
+│   ├── pages/                   # Páginas React
+│   └── ...
+│
+├── Dockerfile                   # Configuração Docker
+├── docker-compose.yml           # Orquestração Docker
+├── package.json                 # Dependências
+├── INTEGRACAO_BACKEND.md        # 📖 Guia de integração
+└── README.md                    # Este arquivo
+```
+
+---
+
+## ⚙️ Configuração da API
+
+Para integrar com seu backend:
+
+1. Abra o arquivo `/html-app/assets/js/config.js`
+2. Atualize a URL base da API:
+
+```javascript
+const API_CONFIG = {
+  baseURL: 'https://api.seu-dominio.com/api',
+  // ... outras configurações
+};
+```
+
+3. Consulte o **[Guia de Integração](./INTEGRACAO_BACKEND.md)** para detalhes completos
+
+---
+
+## 🔐 Autenticação
+
+O sistema suporta dois tipos de usuários:
+
+### Cliente
+- **Acesso**: Portal do Cliente
+- **Permissões**: Visualizar próprios veículos e revisões
+- **Login**: `/cliente/login`
+
+### Administrador
+- **Acesso**: Painel Administrativo
+- **Permissões**: Gestão completa do sistema
+- **Login**: `/admin/login`
+
+---
+
+## 📱 Páginas Disponíveis
+
+### Portal do Cliente
+- `/cliente/dashboard` - Dashboard pessoal
+- `/cliente/perfil` - Perfil do usuário
+- `/cliente/veiculos` - Lista de veículos
+- `/cliente/veiculo/:id` - Detalhes do veículo
+- `/cliente/revisoes` - Histórico de revisões
+- `/cliente/revisao/:id` - Detalhes da revisão
+
+### Painel Administrativo
+- `/admin/dashboard` - Dashboard administrativo
+- `/admin/clientes` - Gestão de clientes
+- `/admin/cliente/:id` - Detalhes do cliente
+- `/admin/veiculos` - Gestão de veículos
+- `/admin/revisoes` - Gestão de revisões
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+### Frontend Ativo (Vanilla)
+- HTML5
+- CSS3 (Custom Properties, Grid, Flexbox)
+- JavaScript ES6+
+- Material Symbols (ícones)
+- Google Fonts (Open Sans)
+
+### Frontend React (Legado)
+- React 18.3.1
+- TypeScript 5.5.3
+- Tailwind CSS 3.4.11
+- shadcn/ui
+- React Query 5.56.2
+- React Hook Form 7.53.0
+- Recharts 2.12.7
+
+### DevOps
+- Docker
+- Docker Compose
+- Nginx
+- GitHub Actions (CI/CD)
+
+---
+
+## 📊 API Endpoints Esperados
+
+O frontend espera os seguintes endpoints REST:
+
+### Autenticação
+- `POST /api/auth/cliente/login` - Login de cliente
+- `POST /api/auth/cliente/register` - Registro de cliente
+- `POST /api/auth/admin/login` - Login de administrador
+
+### Clientes (CRUD)
+- `GET /api/clientes` - Listar
+- `POST /api/clientes` - Criar
+- `GET /api/clientes/:id` - Buscar
+- `PUT /api/clientes/:id` - Atualizar
+- `DELETE /api/clientes/:id` - Deletar
+
+### Veículos (CRUD)
+- `GET /api/veiculos` - Listar
+- `POST /api/veiculos` - Criar
+- `GET /api/veiculos/:id` - Buscar
+- `PUT /api/veiculos/:id` - Atualizar
+- `DELETE /api/veiculos/:id` - Deletar
+
+### Revisões (CRUD)
+- `GET /api/revisoes` - Listar
+- `POST /api/revisoes` - Criar
+- `GET /api/revisoes/:id` - Buscar
+- `PUT /api/revisoes/:id` - Atualizar
+- `DELETE /api/revisoes/:id` - Deletar
+
+### Relatórios
+- `GET /api/relatorios` - Gerar relatórios
+
+Consulte o **[Guia de Integração](./INTEGRACAO_BACKEND.md)** para especificações completas.
+
+---
+
+## 🧪 Desenvolvimento
+
+### Scripts Disponíveis
+
+```bash
+# Desenvolvimento (React)
+npm run dev
+
+# Build (React)
+npm run build
+
+# Lint
+npm run lint
+
+# Preview
+npm run preview
+
+# Servir frontend estático
+npm run serve
+```
+
+---
+
+## 📝 Notas Importantes
+
+### Backend
+- O backend foi **completamente removido**
+- Não há integração com Supabase, Firebase ou qualquer BaaS
+- O projeto está pronto para receber um novo backend REST
+- Consulte **[INTEGRACAO_BACKEND.md](./INTEGRACAO_BACKEND.md)** para implementar
+
+### Dados Mock
+- O frontend inclui dados mock para desenvolvimento
+- Configure `useMockData: false` em `config.js` quando o backend estiver pronto
+
+### Autenticação
+- Atualmente usa localStorage (client-side only)
+- Implementar JWT no backend é recomendado
+- Tokens devem ser enviados via header `Authorization: Bearer {token}`
+
+---
+
+## 🤝 Contribuindo
+
+1. Faça fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
+3. Commit suas mudanças (`git commit -m 'Adiciona MinhaFeature'`)
+4. Push para a branch (`git push origin feature/MinhaFeature`)
+5. Abra um Pull Request
+
+---
+
+## 📄 Licença
+
+Este projeto é privado e propriedade de **Fuse Checkar2**.
+
+---
+
+## 📞 Suporte
+
+Para dúvidas ou suporte:
+- **Issues**: [GitHub Issues](https://github.com/fernandinhomartins40/fuse-checkar2/issues)
+- **Documentação**: Consulte os arquivos `.md` na raiz do projeto
+
+---
+
+## 🚀 Próximos Passos
+
+1. [ ] Implementar backend (ver **[INTEGRACAO_BACKEND.md](./INTEGRACAO_BACKEND.md)**)
+2. [ ] Configurar banco de dados
+3. [ ] Implementar autenticação JWT
+4. [ ] Deploy em produção
+5. [ ] Testes end-to-end
+
+---
+
+**Desenvolvido com ❤️ para Auto Centers**
