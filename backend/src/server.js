@@ -9,6 +9,7 @@ import apiRoutes from './routes/api.js';
 import logger from './config/logger.js';
 import { generalLimiter } from './middleware/rateLimiter.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
+import { checkDatabaseConnection, disconnectDatabase } from './config/database.js';
 
 // Configuração para ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -121,10 +122,38 @@ app.get('*', (req, res) => {
 // Middleware global de tratamento de erros (deve ser o último)
 app.use(errorHandler);
 
-app.listen(PORT, '0.0.0.0', () => {
-  logger.info(`🚀 Servidor rodando em http://0.0.0.0:${PORT}`);
-  logger.info(`📦 Ambiente: ${NODE_ENV}`);
-  logger.info(`🕐 Iniciado em: ${new Date().toISOString()}`);
+// Função de inicialização do servidor
+async function startServer() {
+  try {
+    // Verificar conexão com o banco de dados
+    await checkDatabaseConnection();
+
+    // Iniciar servidor HTTP
+    app.listen(PORT, '0.0.0.0', () => {
+      logger.info(`🚀 Servidor rodando em http://0.0.0.0:${PORT}`);
+      logger.info(`📦 Ambiente: ${NODE_ENV}`);
+      logger.info(`🕐 Iniciado em: ${new Date().toISOString()}`);
+    });
+  } catch (error) {
+    logger.error('❌ Erro ao iniciar servidor:', error);
+    process.exit(1);
+  }
+}
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  logger.info('SIGTERM recebido. Encerrando gracefully...');
+  await disconnectDatabase();
+  process.exit(0);
 });
+
+process.on('SIGINT', async () => {
+  logger.info('SIGINT recebido. Encerrando gracefully...');
+  await disconnectDatabase();
+  process.exit(0);
+});
+
+// Iniciar servidor
+startServer();
 
 export default app;

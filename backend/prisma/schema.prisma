@@ -1,0 +1,277 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// USUÁRIOS E AUTENTICAÇÃO
+// ============================================================================
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  role         String   // 'admin' ou 'cliente'
+  nome         String
+  telefone     String?
+  cpf          String?  @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relações
+  cliente      Cliente?
+  refreshTokens RefreshToken[]
+
+  @@index([email])
+  @@index([cpf])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+}
+
+// ============================================================================
+// CLIENTES
+// ============================================================================
+
+model Cliente {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  nome         String
+  email        String   @unique
+  telefone     String
+  cpf          String   @unique
+  endereco     String?
+  ativo        Boolean  @default(true)
+  observacoes  String?
+  dataCadastro DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relações
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  veiculos Veiculo[]
+  revisoes Revisao[]
+
+  @@index([email])
+  @@index([cpf])
+  @@index([ativo])
+}
+
+// ============================================================================
+// VEÍCULOS
+// ============================================================================
+
+model Veiculo {
+  id             String   @id @default(uuid())
+  clienteId      String
+  marca          String
+  modelo         String
+  ano            Int
+  placa          String   @unique
+  chassi         String   @unique
+  cor            String
+  quilometragem  Int
+  ativo          Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relações
+  cliente  Cliente   @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  revisoes Revisao[]
+
+  @@index([clienteId])
+  @@index([placa])
+  @@index([ativo])
+}
+
+// ============================================================================
+// REVISÕES
+// ============================================================================
+
+model Revisao {
+  id                    String   @id @default(uuid())
+  clienteId             String
+  veiculoId             String
+  tipoServico           String
+  data                  DateTime
+  quilometragem         Int
+  status                String   // 'agendado', 'em_andamento', 'concluido', 'cancelado'
+  tecnicos              String   // JSON array de strings
+  observacoes           String?
+  custoEstimado         Float?
+  tempoEstimado         Int?     // em minutos
+  dataAgendamento       DateTime?
+  dataConclusao         DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Dados de finalização
+  observacoesGerais         String?
+  problemasCriticos         String? // JSON array
+  recomendacoesPrioritarias String? // JSON array
+  custoTotalEstimado        Float?
+  tempoEstimadoReparo       Int?
+  proximaRevisaoData        DateTime?
+  proximaRevisaoKm          Int?
+
+  // Relações
+  cliente             Cliente              @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  veiculo             Veiculo              @relation(fields: [veiculoId], references: [id], onDelete: Cascade)
+  categoriasChecklist CategoriaChecklist[]
+  recomendacoes       Recomendacao[]
+
+  @@index([clienteId])
+  @@index([veiculoId])
+  @@index([status])
+  @@index([data])
+}
+
+// ============================================================================
+// CHECKLIST
+// ============================================================================
+
+model CategoriaChecklist {
+  id               String   @id @default(uuid())
+  revisaoId        String
+  nome             String
+  descricao        String
+  ordem            Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relações
+  revisao             Revisao               @relation(fields: [revisaoId], references: [id], onDelete: Cascade)
+  itens               ItemChecklist[]
+  preDiagnostico      PreDiagnosisQuestion[]
+
+  @@index([revisaoId])
+}
+
+model ItemChecklist {
+  id                String   @id @default(uuid())
+  categoriaId       String
+  nome              String
+  obrigatorio       Boolean  @default(false)
+  status            String   // 'ok', 'nao_ok', 'nao_aplicavel', 'pendente'
+  observacoes       String?
+  prioridade        String   // 'baixa', 'media', 'alta', 'critica'
+  detalheProblema   String?
+  acaoRecomendada   String?
+  custoEstimado     Float?
+  ordem             Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relações
+  categoria CategoriaChecklist @relation(fields: [categoriaId], references: [id], onDelete: Cascade)
+
+  @@index([categoriaId])
+  @@index([status])
+  @@index([prioridade])
+}
+
+model PreDiagnosisQuestion {
+  id            String   @id @default(uuid())
+  categoriaId   String
+  pergunta      String
+  tipo          String   // 'sim_nao', 'texto', 'multipla_escolha'
+  opcoes        String?  // JSON array para multipla_escolha
+  resposta      String?
+  obrigatoria   Boolean  @default(false)
+  ordem         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relações
+  categoria CategoriaChecklist @relation(fields: [categoriaId], references: [id], onDelete: Cascade)
+
+  @@index([categoriaId])
+}
+
+// ============================================================================
+// RECOMENDAÇÕES
+// ============================================================================
+
+model Recomendacao {
+  id               String   @id @default(uuid())
+  revisaoId        String
+  item             String
+  descricao        String
+  prioridade       String   // 'baixa', 'media', 'alta', 'critica'
+  custoEstimado    Float?
+  prazoRecomendado String?
+  status           String   // 'pendente', 'aprovado', 'rejeitado', 'concluido'
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relações
+  revisao Revisao @relation(fields: [revisaoId], references: [id], onDelete: Cascade)
+
+  @@index([revisaoId])
+  @@index([status])
+  @@index([prioridade])
+}
+
+// ============================================================================
+// TEMPLATES DE CHECKLIST (para reutilização)
+// ============================================================================
+
+model ChecklistTemplate {
+  id          String   @id @default(uuid())
+  nome        String
+  descricao   String?
+  tipoVeiculo String?  // 'carro', 'moto', 'caminhao', etc
+  ativo       Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  categorias CategoriaTemplate[]
+
+  @@index([ativo])
+}
+
+model CategoriaTemplate {
+  id          String   @id @default(uuid())
+  templateId  String
+  nome        String
+  descricao   String
+  ordem       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  template ChecklistTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  itens    ItemTemplate[]
+
+  @@index([templateId])
+}
+
+model ItemTemplate {
+  id            String   @id @default(uuid())
+  categoriaId   String
+  nome          String
+  obrigatorio   Boolean  @default(false)
+  prioridade    String   @default("media")
+  ordem         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  categoria CategoriaTemplate @relation(fields: [categoriaId], references: [id], onDelete: Cascade)
+
+  @@index([categoriaId])
+}
