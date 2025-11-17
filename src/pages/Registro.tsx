@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,11 +7,13 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
+import { apiAuth } from "@/services/api";
 
 const registroSchema = z.object({
   name: z.string().min(3, { message: "Nome deve ter pelo menos 3 caracteres" }),
   email: z.string().email({ message: "Email inválido" }),
   phone: z.string().min(10, { message: "Telefone inválido" }),
+  cpf: z.string().min(11, { message: "CPF inválido" }),
   password: z.string().min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
   confirmPassword: z.string()
 }).refine(data => data.password === data.confirmPassword, {
@@ -23,26 +24,51 @@ const registroSchema = z.object({
 const Registro = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof registroSchema>>({
     resolver: zodResolver(registroSchema),
     defaultValues: {
       name: "",
       email: "",
       phone: "",
+      cpf: "",
       password: "",
       confirmPassword: "",
     },
   });
 
-  const onSubmit = (data: z.infer<typeof registroSchema>) => {
-    // Mock registration - in a real app, this would call an API
-    toast({
-      title: "Registro realizado com sucesso",
-      description: "Você já pode fazer login com suas credenciais",
-    });
-    
-    navigate("/login");
+  const onSubmit = async (data: z.infer<typeof registroSchema>) => {
+    setIsLoading(true);
+
+    try {
+      const response = await apiAuth.registerCliente({
+        nome: data.name,
+        email: data.email,
+        telefone: data.phone,
+        cpf: data.cpf,
+        password: data.password,
+      });
+
+      if (response.success) {
+        toast({
+          title: "Registro realizado com sucesso",
+          description: "Você já pode fazer login com suas credenciais",
+        });
+        navigate("/login");
+      } else {
+        throw new Error(response.error || 'Erro ao criar conta');
+      }
+    } catch (error) {
+      console.error('Erro no registro:', error);
+      toast({
+        title: "Erro ao criar conta",
+        description: error instanceof Error ? error.message : "Tente novamente mais tarde",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -108,7 +134,21 @@ const Registro = () => {
                       </FormItem>
                     )}
                   />
-                  
+
+                  <FormField
+                    control={form.control}
+                    name="cpf"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>CPF</FormLabel>
+                        <FormControl>
+                          <Input placeholder="000.000.000-00" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
                       control={form.control}
@@ -141,8 +181,12 @@ const Registro = () => {
                 </div>
                 
                 <div className="pt-4">
-                  <Button type="submit" className="w-full bg-[#0F3460] hover:bg-[#0F3460]/90">
-                    Criar Conta
+                  <Button
+                    type="submit"
+                    className="w-full bg-[#0F3460] hover:bg-[#0F3460]/90"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Criando conta..." : "Criar Conta"}
                   </Button>
                 </div>
               </form>

@@ -14,12 +14,14 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
-    /* Linting */
-    "strict": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noImplicitAny": false,
-    "noFallthroughCasesInSwitch": false,
+    /* Linting - Configurações melhoradas progressivamente */
+    "strict": false,                      // Mantido false por enquanto
+    "strictNullChecks": true,             // ✅ Ativado: previne erros com null/undefined
+    "strictFunctionTypes": true,          // ✅ Ativado: verifica tipos de funções
+    "noUnusedLocals": false,              // Mantido false para não quebrar código existente
+    "noUnusedParameters": false,          // Mantido false para não quebrar código existente
+    "noImplicitAny": true,                // ✅ Ativado: não permite 'any' implícito
+    "noFallthroughCasesInSwitch": true,   // ✅ Ativado: previne erros em switch
 
     "baseUrl": ".",
     "paths": {

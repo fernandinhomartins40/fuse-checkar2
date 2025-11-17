@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
+import { apiAuth } from "@/services/api";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Email inválido" }),
@@ -17,7 +17,8 @@ const loginSchema = z.object({
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -26,33 +27,45 @@ const Login = () => {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof loginSchema>) => {
-    // Mock authentication - in a real app, this would call an API
-    // For demo purposes, we're just checking for a specific email/password
-    if (data.email === "cliente@exemplo.com" && data.password === "123456") {
-      // Store user info in localStorage (in a real app, use proper auth tokens)
-      localStorage.setItem("clienteAuth", JSON.stringify({
-        isAuthenticated: true,
-        user: {
-          id: "1",
-          name: "João Silva",
-          email: data.email,
-          role: "cliente"
-        }
-      }));
-      
-      toast({
-        title: "Login realizado com sucesso",
-        description: "Bem-vindo de volta!",
+  const onSubmit = async (data: z.infer<typeof loginSchema>) => {
+    setIsLoading(true);
+
+    try {
+      // Chamar API de autenticação
+      const response = await apiAuth.loginCliente({
+        email: data.email,
+        password: data.password,
       });
-      
-      navigate("/cliente/dashboard");
-    } else {
+
+      if (response.success && response.token && response.user) {
+        // Armazenar token e dados do usuário
+        localStorage.setItem('authToken', response.token);
+        if (response.refreshToken) {
+          localStorage.setItem('refreshToken', response.refreshToken);
+        }
+        localStorage.setItem('clienteAuth', JSON.stringify({
+          isAuthenticated: true,
+          user: response.user,
+        }));
+
+        toast({
+          title: "Login realizado com sucesso",
+          description: "Bem-vindo de volta!",
+        });
+
+        navigate("/cliente/dashboard");
+      } else {
+        throw new Error(response.error || 'Erro ao fazer login');
+      }
+    } catch (error) {
+      console.error('Erro no login:', error);
       toast({
         title: "Erro ao fazer login",
-        description: "Email ou senha incorretos",
+        description: error instanceof Error ? error.message : "Email ou senha incorretos",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -105,8 +118,12 @@ const Login = () => {
                   )}
                 />
                 
-                <Button type="submit" className="w-full bg-[#0F3460] hover:bg-[#0F3460]/90">
-                  Entrar
+                <Button
+                  type="submit"
+                  className="w-full bg-[#0F3460] hover:bg-[#0F3460]/90"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Entrando..." : "Entrar"}
                 </Button>
               </form>
             </Form>
@@ -117,9 +134,6 @@ const Login = () => {
                 <Link to="/registro" className="text-[#0F3460] hover:text-[#FF5722]">
                   Registre-se
                 </Link>
-              </p>
-              <p className="text-sm text-gray-500 mt-4">
-                * Para demo: use cliente@exemplo.com / 123456
               </p>
             </div>
           </div>

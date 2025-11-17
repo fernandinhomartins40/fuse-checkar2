@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +8,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "../contexts/AuthContext";
+import { apiAuth } from "@/services/api";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Email inválido" }),
@@ -19,7 +19,8 @@ const AdminLogin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { login } = useAuth();
-  
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -28,30 +29,49 @@ const AdminLogin = () => {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof loginSchema>) => {
-    // Mock authentication for admin
-    if (data.email === "admin@checar.com" && data.password === "admin123") {
-      const adminUser = {
-        id: "admin-1",
-        name: "Administrador",
+  const onSubmit = async (data: z.infer<typeof loginSchema>) => {
+    setIsLoading(true);
+
+    try {
+      // Chamar API de autenticação admin
+      const response = await apiAuth.loginAdmin({
         email: data.email,
-        role: "mecanico" as const
-      };
-      
-      login(adminUser);
-      
-      toast({
-        title: "Login realizado com sucesso",
-        description: "Bem-vindo ao painel administrativo!",
+        password: data.password,
       });
-      
-      navigate("/admin/dashboard");
-    } else {
+
+      if (response.success && response.token && response.user) {
+        // Armazenar token e dados do usuário
+        localStorage.setItem('authToken', response.token);
+        if (response.refreshToken) {
+          localStorage.setItem('refreshToken', response.refreshToken);
+        }
+
+        // Usar o contexto de auth para definir o usuário
+        login({
+          id: response.user.id,
+          name: response.user.nome,
+          email: response.user.email,
+          role: "mecanico" as const,
+        });
+
+        toast({
+          title: "Login realizado com sucesso",
+          description: "Bem-vindo ao painel administrativo!",
+        });
+
+        navigate("/admin/dashboard");
+      } else {
+        throw new Error(response.error || 'Erro ao fazer login');
+      }
+    } catch (error) {
+      console.error('Erro no login admin:', error);
       toast({
         title: "Erro ao fazer login",
-        description: "Email ou senha incorretos",
+        description: error instanceof Error ? error.message : "Email ou senha incorretos",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -103,8 +123,12 @@ const AdminLogin = () => {
                 )}
               />
               
-              <Button type="submit" className="w-full bg-[#0F3460] hover:bg-[#0F3460]/90">
-                Entrar
+              <Button
+                type="submit"
+                className="w-full bg-[#0F3460] hover:bg-[#0F3460]/90"
+                disabled={isLoading}
+              >
+                {isLoading ? "Entrando..." : "Entrar"}
               </Button>
             </form>
           </Form>
@@ -114,9 +138,6 @@ const AdminLogin = () => {
               <Link to="/" className="text-[#0F3460] hover:text-[#FF5722]">
                 ← Voltar para página inicial
               </Link>
-            </p>
-            <p className="text-sm text-gray-500 mt-4">
-              * Para demo: use admin@checar.com / admin123
             </p>
           </div>
         </div>

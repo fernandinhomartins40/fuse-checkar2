@@ -6,6 +6,9 @@ import { fileURLToPath } from 'url';
 import fs from 'fs';
 import dotenv from 'dotenv';
 import apiRoutes from './routes/api.js';
+import logger from './config/logger.js';
+import { generalLimiter } from './middleware/rateLimiter.js';
+import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
 // Configuração para ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -46,11 +49,14 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Logs básicos
+// Logs de requisições
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path} - ${req.ip}`);
+  logger.http(`${req.method} ${req.path} - ${req.ip}`);
   next();
 });
+
+// Rate limiting geral
+app.use('/api', generalLimiter);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -112,31 +118,13 @@ app.get('*', (req, res) => {
   res.sendFile(htmlIndexPath);
 });
 
-// Middleware de tratamento de erros
-app.use((err, req, res, next) => {
-  console.error('Erro no servidor:', {
-    message: err.message,
-    stack: err.stack,
-    url: req.url,
-    method: req.method,
-    ip: req.ip,
-    timestamp: new Date().toISOString()
-  });
-  
-  res.status(err.status || 500).json({
-    error: NODE_ENV === 'development' ? err.message : 'Erro interno do servidor',
-    path: req.path,
-    timestamp: new Date().toISOString(),
-    ...(NODE_ENV === 'development' && { stack: err.stack })
-  });
-});
-
-// Remover middleware de 404 pois agora temos SPA fallback
+// Middleware global de tratamento de erros (deve ser o último)
+app.use(errorHandler);
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Servidor rodando em http://0.0.0.0:${PORT}`);
-  console.log(`📦 Ambiente: ${NODE_ENV}`);
-  console.log(`🕐 Iniciado em: ${new Date().toISOString()}`);
+  logger.info(`🚀 Servidor rodando em http://0.0.0.0:${PORT}`);
+  logger.info(`📦 Ambiente: ${NODE_ENV}`);
+  logger.info(`🕐 Iniciado em: ${new Date().toISOString()}`);
 });
 
 export default app;

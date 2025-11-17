@@ -9,11 +9,13 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "noImplicitAny": false,
-    "noUnusedParameters": false,
-    "skipLibCheck": true,
-    "allowJs": true,
-    "noUnusedLocals": false,
-    "strictNullChecks": false
+    /* Configurações melhoradas */
+    "noImplicitAny": true,        // ✅ Ativado: não permite 'any' implícito
+    "strictNullChecks": true,     // ✅ Ativado: previne erros com null/undefined
+    "strictFunctionTypes": true,  // ✅ Ativado: verifica tipos de funções
+    "noUnusedParameters": false,  // Mantido false para não quebrar código existente
+    "noUnusedLocals": false,      // Mantido false para não quebrar código existente
+    "skipLibCheck": true,         // Mantido true para performance
+    "allowJs": false              // ❌ Desativado: não permitir mais JS misturado
   }
 }

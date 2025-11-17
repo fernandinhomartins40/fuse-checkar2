@@ -1,13 +1,11 @@
 import { Router } from 'express';
+import authRoutes from './auth.routes.js';
+import { authenticate } from '../middleware/auth.js';
 
 const router = Router();
 
-// Middleware de autenticação (exemplo básico)
-const authenticate = (req, res, next) => {
-  // TODO: Implementar lógica de autenticação JWT
-  // Por enquanto, apenas passa adiante
-  next();
-};
+// Rotas de autenticação (não protegidas)
+router.use('/auth', authRoutes);
 
 // Rotas de status e saúde
 router.get('/health', (req, res) => {
