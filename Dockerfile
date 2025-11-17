@@ -7,26 +7,18 @@ RUN apk add --no-cache python3 make g++
 # Definir diretório de trabalho
 WORKDIR /app
 
-# Copiar package.json e package-lock.json do frontend
-COPY package*.json ./
-
-# Limpar cache npm e instalar dependências do frontend
-RUN npm cache clean --force && \
-    npm install --verbose && \
-    npm cache clean --force
-
-# Copiar código fonte do frontend
-COPY . .
-
-# Build do frontend React+Vite
-RUN npm run build
-
 # Instalar dependências do backend (apenas produção)
-WORKDIR /app/backend
-COPY backend/package*.json ./
-RUN npm cache clean --force && \
+COPY backend/package*.json ./backend/
+RUN cd backend && \
+    npm cache clean --force && \
     npm install --production --verbose && \
     npm cache clean --force
+
+# Copiar código fonte do backend
+COPY backend ./backend
+
+# Copiar aplicação HTML
+COPY html-app ./html-app
 
 # ================================
 # Estágio de produção
@@ -45,9 +37,6 @@ WORKDIR /app
 
 # Copiar arquivos do backend do estágio anterior
 COPY --from=builder --chown=nodejs:nodejs /app/backend ./backend
-
-# Copiar build do frontend do estágio anterior
-COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 
 # Copiar aplicação HTML
 COPY --from=builder --chown=nodejs:nodejs /app/html-app ./html-app
