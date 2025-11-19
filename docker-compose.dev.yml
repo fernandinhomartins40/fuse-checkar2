@@ -1,0 +1,71 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: fuse-checkar2-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: fusecheckar
+      POSTGRES_PASSWORD: fusecheckar_dev
+      POSTGRES_DB: fusecheckar2_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    networks:
+      - fuse-network-dev
+
+  # Backend em modo desenvolvimento (com hot reload)
+  backend:
+    build:
+      context: ./packages/backend
+      dockerfile: docker/Dockerfile.dev
+    container_name: fuse-checkar2-backend-dev
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://fusecheckar:fusecheckar_dev@postgres:5432/fusecheckar2_dev
+      JWT_SECRET: dev-jwt-secret-change-in-production
+      JWT_REFRESH_SECRET: dev-refresh-secret-change-in-production
+      PORT: 3005
+      CORS_ORIGINS: http://localhost:8080,http://localhost:5173
+      FRONTEND_URL: http://localhost:8080
+      LOG_LEVEL: debug
+    ports:
+      - "3005:3005"
+    depends_on:
+      - postgres
+    volumes:
+      - ./packages/backend:/app
+      - /app/node_modules
+      - ./packages/backend/uploads:/app/uploads
+    networks:
+      - fuse-network-dev
+    command: npm run dev
+
+  # Frontend em modo desenvolvimento (Vite dev server)
+  frontend:
+    build:
+      context: ./packages/frontend
+      dockerfile: ../../docker/frontend/Dockerfile.dev
+    container_name: fuse-checkar2-frontend-dev
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./packages/frontend:/app
+      - /app/node_modules
+    networks:
+      - fuse-network-dev
+    command: npm run dev
+
+volumes:
+  postgres_dev_data:
+    driver: local
+
+networks:
+  fuse-network-dev:
+    driver: bridge
