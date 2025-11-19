@@ -126,9 +126,9 @@ class AuthService {
 
     // Gerar tokens
     const tokens = generateTokenPair({
-      userId: String(result.user.id),
+      userId: result.user.id,
       email: result.user.email,
-      role: result.user.role,
+      role: result.user.role as any,
     });
 
     // Salvar refresh token
@@ -193,9 +193,9 @@ class AuthService {
 
     // Gerar tokens
     const tokens = generateTokenPair({
-      userId: String(user.id),
+      userId: user.id,
       email: user.email,
-      role: user.role,
+      role: user.role as any,
     });
 
     // Atualizar refresh token e último login
@@ -233,11 +233,11 @@ class AuthService {
    * await authService.logout(userId);
    * ```
    */
-  async logout(userId: string): Promise<void> {
+  async logout(userId: number): Promise<void> {
     logger.info(`Logout for user ID: ${userId}`);
 
     await prisma.user.update({
-      where: { id: parseInt(userId) },
+      where: { id: userId },
       data: { refreshToken: null },
     });
 
@@ -268,7 +268,7 @@ class AuthService {
 
     // Buscar usuário
     const user = await prisma.user.findUnique({
-      where: { id: parseInt(payload.userId) },
+      where: { id: payload.userId },
     });
 
     if (!user) {
@@ -286,9 +286,9 @@ class AuthService {
 
     // Gerar novos tokens
     const tokens = generateTokenPair({
-      userId: String(user.id),
+      userId: user.id,
       email: user.email,
-      role: user.role,
+      role: user.role as any,
     });
 
     // Atualizar refresh token
@@ -313,9 +313,9 @@ class AuthService {
    * const user = await authService.me(userId);
    * ```
    */
-  async me(userId: string): Promise<any> {
+  async me(userId: number): Promise<any> {
     const user = await prisma.user.findUnique({
-      where: { id: parseInt(userId) },
+      where: { id: userId },
       select: {
         id: true,
         email: true,
@@ -433,14 +433,14 @@ class AuthService {
    * ```
    */
   async changePassword(
-    userId: string,
+    userId: number,
     currentPassword: string,
     newPassword: string
   ): Promise<void> {
     logger.info(`Password change requested for user ID: ${userId}`);
 
     const user = await prisma.user.findUnique({
-      where: { id: parseInt(userId) },
+      where: { id: userId },
     });
 
     if (!user) {

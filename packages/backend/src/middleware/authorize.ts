@@ -93,7 +93,7 @@ export function requireSelfOrAdmin(userIdParam: string = 'userId') {
       }
 
       const authenticatedUserId = req.user.userId;
-      const targetUserId = req.params[userIdParam];
+      const targetUserId = parseInt(req.params[userIdParam], 10);
       const userRole = req.user.role;
 
       // Allow if user is admin or accessing their own resource
@@ -129,7 +129,7 @@ export function requireCompanyOwnerOrAdmin(companyIdParam: string = 'companyId')
 
       const userRole = req.user.role;
       const userCompanyId = req.user.companyId;
-      const targetCompanyId = req.params[companyIdParam];
+      const targetCompanyId = parseInt(req.params[companyIdParam], 10);
 
       // Allow if user is admin or owner of the company
       if (userRole === 'ADMIN' || userCompanyId === targetCompanyId) {

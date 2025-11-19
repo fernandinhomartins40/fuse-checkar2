@@ -1,5 +1,5 @@
 import rateLimit, { RateLimitRequestHandler } from 'express-rate-limit';
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import env from '../config/env';
 import logger from '../config/logger';
 
@@ -269,10 +269,10 @@ export function skipForIPs(
   allowedIPs: string[],
   rateLimiter: RateLimitRequestHandler
 ): RateLimitRequestHandler {
-  return (req: Request, res: Response, next) => {
+  return ((req: Request, res: Response, next: NextFunction) => {
     if (allowedIPs.includes(req.ip || '')) {
       return next();
     }
     return rateLimiter(req, res, next);
-  };
+  }) as any;
 }

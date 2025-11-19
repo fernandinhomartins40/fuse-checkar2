@@ -1,12 +1,8 @@
 import jwt from 'jsonwebtoken';
 import env from '../config/env';
+import type { Express } from 'express-serve-static-core';
 
-export interface JwtPayload {
-  userId: string;
-  email: string;
-  role: string;
-  [key: string]: any;
-}
+export type JwtPayload = Express.JwtPayload;
 
 export interface TokenPair {
   accessToken: string;
@@ -31,10 +27,10 @@ export interface TokenPair {
  */
 export function generateAccessToken(
   payload: JwtPayload,
-  expiresIn: string = env.jwtExpiresIn
+  expiresIn: string | number = env.jwtExpiresIn
 ): string {
-  return jwt.sign(payload, env.jwtSecret, {
-    expiresIn,
+  return jwt.sign(payload as any, env.jwtSecret, {
+    expiresIn: expiresIn as any,
     issuer: env.appName,
   });
 }
@@ -57,10 +53,10 @@ export function generateAccessToken(
  */
 export function generateRefreshToken(
   payload: JwtPayload,
-  expiresIn: string = env.jwtRefreshExpiresIn
+  expiresIn: string | number = env.jwtRefreshExpiresIn
 ): string {
-  return jwt.sign(payload, env.jwtRefreshSecret, {
-    expiresIn,
+  return jwt.sign(payload as any, env.jwtRefreshSecret, {
+    expiresIn: expiresIn as any,
     issuer: env.appName,
   });
 }

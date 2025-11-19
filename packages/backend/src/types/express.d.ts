@@ -30,6 +30,16 @@ declare global {
       clienteId?: number;
 
       /**
+       * ID da empresa (opcional, para futura extensão)
+       */
+      companyId?: number;
+
+      /**
+       * Permissões do usuário (opcional, para futura extensão)
+       */
+      permissions?: string[];
+
+      /**
        * Timestamp de emissão
        */
       iat?: number;

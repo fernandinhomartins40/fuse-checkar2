@@ -126,7 +126,7 @@ export function optionalAuthenticate(req: Request, res: Response, next: NextFunc
  * });
  * ```
  */
-export function getUserId(req: Request): string {
+export function getUserId(req: Request): number {
   if (!req.user || !req.user.userId) {
     throw new UnauthorizedError('Usuário não autenticado');
   }

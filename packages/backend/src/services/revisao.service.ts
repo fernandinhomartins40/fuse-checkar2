@@ -579,7 +579,7 @@ class RevisaoService {
 
     return this.update(id, {
       status: StatusRevisao.CANCELADA,
-      observacoes: observacoes || revisao.observacoes,
+      observacoes: observacoes || revisao.observacoes || undefined,
     });
   }
 
