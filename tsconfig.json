@@ -1,19 +1,16 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
-    },
-    "noImplicitAny": false,
-    "noUnusedParameters": false,
-    "skipLibCheck": true,
-    "allowJs": true,
-    "noUnusedLocals": false,
-    "strictNullChecks": false
-  }
+      "@fuse-checkar2/frontend/*": ["packages/frontend/src/*"],
+      "@fuse-checkar2/backend/*": ["packages/backend/src/*"],
+      "@fuse-checkar2/shared": ["packages/shared"],
+      "@fuse-checkar2/shared/*": ["packages/shared/*"]
+    }
+  },
+  "files": [],
+  "references": [
+    { "path": "./packages/frontend" },
+    { "path": "./packages/shared" }
+  ]
 }

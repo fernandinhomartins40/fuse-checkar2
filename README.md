@@ -1,73 +1,307 @@
-# Welcome to your Lovable project
+# Fuse Checkar2 - Sistema de Gestão de Revisões Automotivas
 
-## Project info
+Sistema completo para gestão de oficinas mecânicas, clientes, veículos e revisões automotivas.
 
-**URL**: https://lovable.dev/projects/a4cd1c20-3931-42f5-b59d-669b68fd8a99
+## 📋 Índice
 
-## How can I edit this code?
+- [Sobre o Projeto](#sobre-o-projeto)
+- [Tecnologias](#tecnologias)
+- [Arquitetura](#arquitetura)
+- [Instalação](#instalação)
+- [Desenvolvimento](#desenvolvimento)
+- [Produção](#produção)
+- [Documentação](#documentação)
 
-There are several ways of editing your application.
+## 🎯 Sobre o Projeto
 
-**Use Lovable**
+O Fuse Checkar2 é uma aplicação full-stack construída em arquitetura monorepo que permite:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/a4cd1c20-3931-42f5-b59d-669b68fd8a99) and start prompting.
+- Gestão de clientes e suas informações
+- Controle de veículos e histórico de manutenções
+- Agendamento e acompanhamento de revisões
+- Diferentes níveis de acesso (Cliente, Mecânico, Admin)
+- Validações brasileiras (CPF, CNPJ, CEP, telefone, placa)
+- Sistema completo de autenticação com JWT
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🛠 Tecnologias
 
-**Use your preferred IDE**
+### Frontend
+- **React** 18 com **TypeScript**
+- **Vite** para build e dev server
+- **TanStack Query** para gerenciamento de estado
+- **React Router** para navegação
+- **Shadcn/ui** + **Tailwind CSS** para interface
+- **Zod** para validação
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Backend
+- **Node.js** + **Express.js**
+- **TypeScript** em modo strict
+- **Prisma ORM** com PostgreSQL
+- **JWT** para autenticação
+- **Zod** para validação de schemas
+- **Winston** para logging
+- **Bcrypt** para hash de senhas
+- **Express Rate Limit** para proteção contra abuso
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Infraestrutura
+- **Docker** + **Docker Compose**
+- **Nginx** como reverse proxy
+- **PostgreSQL 15** para banco de dados
+- **Multi-stage builds** para otimização
 
-Follow these steps:
+## 🏗 Arquitetura
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+```
+fuse-checkar2/
+├── packages/
+│   ├── frontend/          # Aplicação React
+│   ├── backend/           # API Node.js + Express
+│   └── shared/            # Tipos e utils compartilhados
+├── docker/                # Configurações Docker
+│   ├── nginx/             # Config Nginx
+│   └── frontend/          # Docker frontend
+├── docker-compose.yml     # Compose produção
+├── docker-compose.dev.yml # Compose desenvolvimento
+└── docs/                  # Documentação adicional
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Pacotes
 
-# Step 3: Install the necessary dependencies.
-npm i
+#### `@fuse-checkar2/frontend`
+Interface React para usuários finais, mecânicos e administradores.
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+**Principais recursos:**
+- Dashboard responsivo
+- Gestão de clientes, veículos e revisões
+- Sistema de autenticação integrado
+- Validações em tempo real
+
+**Tecnologias:**
+- React 18, TypeScript, Vite
+- TanStack Query, React Router
+- Shadcn/ui, Tailwind CSS
+
+**Como rodar:**
+```bash
+cd packages/frontend
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+#### `@fuse-checkar2/backend`
+API RESTful completa com autenticação, autorização e rate limiting.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+**Principais recursos:**
+- Autenticação JWT (access + refresh tokens)
+- Rate limiting configurável
+- Validação completa com Zod
+- Logging estruturado
+- Graceful shutdown
 
-**Use GitHub Codespaces**
+**Tecnologias:**
+- Node.js, Express, TypeScript
+- Prisma ORM, PostgreSQL
+- Winston, Helmet, CORS
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+**Documentação:** Ver [packages/backend/README.md](packages/backend/README.md)
 
-## What technologies are used for this project?
+**Como rodar:**
+```bash
+cd packages/backend
+npm install
+cp .env.example .env
+# Editar .env com suas configurações
+npm run db:generate
+npm run db:migrate
+npm run db:seed
+npm run dev
+```
 
-This project is built with:
+#### `@fuse-checkar2/shared`
+Tipos TypeScript, constantes e utilitários compartilhados entre frontend e backend.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+**Exports:**
+- Tipos: `Cliente`, `Veiculo`, `Revisao`, `ApiResponse`, etc.
+- Enums: `Role`, `StatusCliente`, `StatusRevisao`, etc.
+- Utils: `formatCPF`, `formatPhone`, `formatCEP`, etc.
 
-## How can I deploy this project?
+## 🚀 Instalação
 
-Simply open [Lovable](https://lovable.dev/projects/a4cd1c20-3931-42f5-b59d-669b68fd8a99) and click on Share -> Publish.
+### Pré-requisitos
 
-## Can I connect a custom domain to my Lovable project?
+- Node.js 18+ ([instalar com nvm](https://github.com/nvm-sh/nvm))
+- Docker e Docker Compose (opcional, para produção)
+- PostgreSQL 15+ (se não usar Docker)
 
-Yes, you can!
+### Instalação Rápida
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+```bash
+# 1. Clonar o repositório
+git clone <YOUR_GIT_URL>
+cd fuse-checkar2
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+# 2. Instalar dependências (workspace)
+npm install
+
+# 3. Configurar variáveis de ambiente
+cd packages/backend
+cp .env.example .env
+# Editar .env com suas configurações
+
+# 4. Gerar Prisma Client
+npm run db:generate
+
+# 5. Executar migrations
+npm run db:migrate
+
+# 6. Popular banco com dados de teste
+npm run db:seed
+
+# 7. Voltar para raiz
+cd ../..
+```
+
+## 💻 Desenvolvimento
+
+### Opção 1: Ambiente Local
+
+```bash
+# Terminal 1 - Backend
+cd packages/backend
+npm run dev
+
+# Terminal 2 - Frontend
+cd packages/frontend
+npm run dev
+```
+
+O frontend estará disponível em `http://localhost:5173`
+A API estará disponível em `http://localhost:3005`
+
+### Opção 2: Docker Compose (Dev)
+
+```bash
+docker-compose -f docker-compose.dev.yml up
+```
+
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:3005`
+- PostgreSQL: `localhost:5432`
+
+**Recursos do modo dev:**
+- Hot reload para backend (nodemon)
+- Hot reload para frontend (Vite HMR)
+- Volumes montados para edição em tempo real
+
+### Credenciais de Teste
+
+Após executar `npm run db:seed`:
+
+- **Admin:** admin@fusecheckar.com / Admin@123
+- **Mecânico:** mecanico@fusecheckar.com / Mecanico@123
+- **Cliente:** cliente1@example.com / Cliente@123
+
+## 🏭 Produção
+
+### Com Docker Compose
+
+```bash
+# Build e iniciar
+docker-compose up -d
+
+# Ver logs
+docker-compose logs -f
+
+# Parar
+docker-compose down
+```
+
+A aplicação estará disponível em `http://localhost` (porta 80).
+
+### Build Manual
+
+```bash
+# Build shared package
+cd packages/shared
+npm run build
+
+# Build backend
+cd ../backend
+npm run build
+
+# Build frontend
+cd ../frontend
+npm run build
+
+# Iniciar backend
+cd ../backend
+npm start
+```
+
+## 📚 Documentação
+
+### Documentos Disponíveis
+
+- [packages/backend/README.md](packages/backend/README.md) - Documentação completa do backend
+- [ANALISE_TYPESCRIPT_PROFUNDA.md](ANALISE_TYPESCRIPT_PROFUNDA.md) - Análise TypeScript detalhada (2.568 linhas)
+- [FASE_5_PLANO_BACKEND_COMPLETO.md](FASE_5_PLANO_BACKEND_COMPLETO.md) - Planejamento arquitetural completo
+- [RELATORIO_ANALISE_COMPLETA.md](RELATORIO_ANALISE_COMPLETA.md) - Relatório de análise da aplicação
+- [DOCUMENTACAO_API_ORIGINAL.md](DOCUMENTACAO_API_ORIGINAL.md) - Documentação dos 28 endpoints API
+
+### Estrutura da API
+
+A API REST está documentada com exemplos em `packages/backend/README.md`.
+
+**Principais endpoints:**
+- `POST /api/auth/register` - Registro de usuários
+- `POST /api/auth/login` - Login
+- `GET /api/clientes` - Listar clientes (paginado)
+- `GET /api/veiculos` - Listar veículos
+- `GET /api/revisoes` - Listar revisões
+- `GET /api/health` - Health check
+
+## 🔒 Segurança
+
+- Autenticação JWT com access e refresh tokens
+- Bcrypt para hash de senhas (10 rounds)
+- Helmet para security headers
+- Rate limiting (8 estratégias diferentes)
+- Validação de entrada com Zod
+- CORS configurável por ambiente
+- Sanitização de logs (remove senhas, tokens)
+
+## 🧪 Testes
+
+```bash
+# Frontend
+cd packages/frontend
+npm test
+
+# Backend
+cd packages/backend
+npm test
+```
+
+## 🤝 Contribuindo
+
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📝 Licença
+
+Este projeto está sob a licença MIT.
+
+## 👥 Autores
+
+- Desenvolvido com Claude AI
+
+## 📞 Suporte
+
+Para suporte, abra uma issue no repositório do projeto.
+
+---
+
+**Projeto URL**: https://lovable.dev/projects/a4cd1c20-3931-42f5-b59d-669b68fd8a99
