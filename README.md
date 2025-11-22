@@ -44,26 +44,36 @@ O Fuse Checkar2 é uma aplicação full-stack construída em arquitetura monorep
 - **Express Rate Limit** para proteção contra abuso
 
 ### Infraestrutura
-- **Docker** + **Docker Compose**
+- **Turborepo** - Build system e cache inteligente
+- **Docker** + **Docker Compose** - Containerização
 - **Nginx** como reverse proxy
 - **PostgreSQL 15** para banco de dados
 - **Multi-stage builds** para otimização
 
 ## 🏗 Arquitetura
 
+**Monorepo gerenciado por Turborepo** para builds otimizados e cache compartilhado entre pacotes.
+
 ```
 fuse-checkar2/
 ├── packages/
-│   ├── frontend/          # Aplicação React
-│   ├── backend/           # API Node.js + Express
+│   ├── frontend/          # Aplicação React (porta 3000)
+│   ├── backend/           # API Node.js + Express (porta 3001)
 │   └── shared/            # Tipos e utils compartilhados
 ├── docker/                # Configurações Docker
 │   ├── nginx/             # Config Nginx
 │   └── frontend/          # Docker frontend
+├── turbo.json             # Configuração Turborepo
 ├── docker-compose.yml     # Compose produção
 ├── docker-compose.dev.yml # Compose desenvolvimento
 └── docs/                  # Documentação adicional
 ```
+
+**Portas:**
+- Frontend: `3000` (dev) / `80` (produção via nginx)
+- Backend API: `3001` (interno)
+- PostgreSQL: `5432`
+- Nginx Proxy: `80`
 
 ### Pacotes
 
@@ -163,7 +173,21 @@ cd ../..
 
 ## 💻 Desenvolvimento
 
-### Opção 1: Ambiente Local
+### Opção 1: Turborepo (Recomendado)
+
+```bash
+# Rodar todos os pacotes em modo dev
+npm run dev
+
+# Ou rodar apenas um pacote específico
+npm run dev:frontend  # Frontend na porta 3000
+npm run dev:backend   # Backend na porta 3001
+```
+
+O frontend estará disponível em `http://localhost:3000`
+A API estará disponível em `http://localhost:3001`
+
+### Opção 2: Ambiente Local Manual
 
 ```bash
 # Terminal 1 - Backend
@@ -175,17 +199,14 @@ cd packages/frontend
 npm run dev
 ```
 
-O frontend estará disponível em `http://localhost:5173`
-A API estará disponível em `http://localhost:3005`
-
-### Opção 2: Docker Compose (Dev)
+### Opção 3: Docker Compose (Dev)
 
 ```bash
 docker-compose -f docker-compose.dev.yml up
 ```
 
-- Frontend: `http://localhost:5173`
-- Backend: `http://localhost:3005`
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:3001`
 - PostgreSQL: `localhost:5432`
 
 **Recursos do modo dev:**

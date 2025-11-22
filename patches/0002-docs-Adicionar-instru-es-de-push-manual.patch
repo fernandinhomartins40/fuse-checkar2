@@ -1,0 +1,165 @@
+From 8cffa31ac7c804d9b1746b20a8a9c6ca9ca640e6 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sat, 22 Nov 2025 16:01:30 +0000
+Subject: [PATCH 2/4] =?UTF-8?q?docs:=20Adicionar=20instru=C3=A7=C3=B5es=20?=
+ =?UTF-8?q?de=20push=20manual?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ PUSH_INSTRUCTIONS.md | 142 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 142 insertions(+)
+ create mode 100644 PUSH_INSTRUCTIONS.md
+
+diff --git a/PUSH_INSTRUCTIONS.md b/PUSH_INSTRUCTIONS.md
+new file mode 100644
+index 0000000..0d698a3
+--- /dev/null
++++ b/PUSH_INSTRUCTIONS.md
+@@ -0,0 +1,142 @@
++# Instruções para Push dos Commits Pendentes
++
++## 🔴 Status Atual
++
++Há **2 commits** na branch `main` que precisam ser enviados para o repositório remoto.
++
++### Commits Pendentes:
++
++#### 1. Commit Principal: `068350e`
++**Mensagem:** `refactor: Migrar para Turborepo e padronizar portas`
++
++**Alterações importantes:**
++- ✅ Migração completa de npm workspaces para Turborepo
++- ✅ Frontend agora na porta **3000** (antes: 8080)
++- ✅ Backend agora na porta **3001** (antes: 3005)
++- ✅ Docker completamente reconfigurado e isolado
++- ✅ Nginx configurado com portas corretas
++- ✅ README.md atualizado com documentação completa
++
++**Arquivos modificados:**
++- `turbo.json` (novo)
++- `package.json`
++- `package-lock.json`
++- `docker-compose.yml`
++- `docker-compose.dev.yml`
++- `docker/nginx/nginx.conf`
++- `packages/backend/.env.example`
++- `packages/backend/src/config/env.ts`
++- `packages/frontend/vite.config.ts`
++- `README.md`
++
++#### 2. Commit de Merge: `a7d402e`
++**Mensagem:** `Merge branch 'main'`
++
++Merge automático para sincronizar com o estado remoto.
++
++---
++
++## 📋 Como Fazer o Push
++
++### Opção 1: Push Simples (Recomendado)
++
++```bash
++cd /home/user/fuse-checkar2
++git push origin main
++```
++
++### Opção 2: Se houver conflitos
++
++```bash
++# Verificar status
++git status
++
++# Fazer pull primeiro (se necessário)
++git pull origin main --rebase
++
++# Fazer push
++git push origin main
++```
++
++### Opção 3: Criar Pull Request
++
++Se preferir revisar as mudanças via Pull Request:
++
++```bash
++# Criar uma branch específica
++git checkout -b feature/turborepo-migration
++
++# Fazer push da branch
++git push -u origin feature/turborepo-migration
++
++# Depois criar PR via interface do GitHub
++```
++
++---
++
++## ✅ Verificação Pós-Push
++
++Após fazer o push com sucesso, verifique:
++
++```bash
++# Confirmar que não há commits pendentes
++git status
++
++# Deve mostrar: "Your branch is up to date with 'origin/main'"
++```
++
++---
++
++## 🧹 Limpeza de Branches Remotas
++
++Após consolidar tudo na main, você pode deletar as branches antigas remotamente:
++
++```bash
++# Via GitHub CLI
++gh api repos/fernandinhomartins40/fuse-checkar2/git/refs/heads/claude/analyze-typescript-errors-01USBDQFrqCqpHxm2vHE6Cvp -X DELETE
++gh api repos/fernandinhomartins40/fuse-checkar2/git/refs/heads/claude/backend-docker-nginx-setup-01RwpReiEKAeAqSHZ66rLfiQ -X DELETE
++gh api repos/fernandinhomartins40/fuse-checkar2/git/refs/heads/claude/fix-monorepo-imports-016km1tdT7CyZ3oYXHiw7UX4 -X DELETE
++gh api repos/fernandinhomartins40/fuse-checkar2/git/refs/heads/claude/merged-backend-to-main-01RwpReiEKAeAqSHZ66rLfiQ -X DELETE
++gh api repos/fernandinhomartins40/fuse-checkar2/git/refs/heads/claude/remove-backend-setup-frontend-0141FdgUwXYj2JXYiS183BbB -X DELETE
++gh api repos/fernandinhomartins40/fuse-checkar2/git/refs/heads/claude/setup-monorepo-structure-01Ed3PVDVWaRVx11PeJq7Pvb -X DELETE
++```
++
++Ou delete manualmente via interface do GitHub.
++
++---
++
++## 📊 Estado Final Esperado
++
++Após o push bem-sucedido:
++
++- ✅ Branch `main` atualizada remotamente
++- ✅ Turborepo configurado
++- ✅ Portas padronizadas (3000/3001)
++- ✅ Docker isolado e funcional
++- ✅ Documentação completa
++- ✅ TypeScript compilando 100%
++
++---
++
++## ⚠️ Erro HTTP 403
++
++Se você encontrar erro `HTTP 403 curl 22`, pode ser devido a:
++
++1. **Proteção de branch** - Verifique as configurações do repositório
++2. **Permissões** - Verifique suas credenciais Git
++3. **Token expirado** - Renove seu token de acesso
++
++**Solução:**
++```bash
++# Reconfigurar credenciais
++git config credential.helper store
++
++# Ou usar SSH
++git remote set-url origin git@github.com:fernandinhomartins40/fuse-checkar2.git
++```
++
++---
++
++**Arquivo gerado em:** 2025-11-22
++**Branch atual:** main
++**Commits pendentes:** 2
+-- 
+2.43.0
+

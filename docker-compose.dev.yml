@@ -28,12 +28,12 @@ services:
       DATABASE_URL: postgresql://fusecheckar:fusecheckar_dev@postgres:5432/fusecheckar2_dev
       JWT_SECRET: dev-jwt-secret-change-in-production
       JWT_REFRESH_SECRET: dev-refresh-secret-change-in-production
-      PORT: 3005
-      CORS_ORIGINS: http://localhost:8080,http://localhost:5173
-      FRONTEND_URL: http://localhost:8080
+      PORT: 3001
+      CORS_ORIGINS: http://localhost:3000
+      FRONTEND_URL: http://localhost:3000
       LOG_LEVEL: debug
     ports:
-      - "3005:3005"
+      - "3001:3001"
     depends_on:
       - postgres
     volumes:
@@ -54,7 +54,7 @@ services:
     environment:
       NODE_ENV: development
     ports:
-      - "8080:8080"
+      - "3000:3000"
     volumes:
       - ./packages/frontend:/app
       - /app/node_modules
