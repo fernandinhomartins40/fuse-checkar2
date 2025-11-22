@@ -1,0 +1,646 @@
+From 80025da2ffbc4e93993a19e864595f51dc3dd826 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sat, 22 Nov 2025 15:26:37 +0000
+Subject: [PATCH 1/4] refactor: Migrar para Turborepo e padronizar portas
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+BREAKING CHANGES:
+- Migração de npm workspaces para Turborepo
+- Frontend agora roda na porta 3000 (antes 8080)
+- Backend agora roda na porta 3001 (antes 3005)
+
+Alterações:
+- Adicionado turbo.json com pipeline de builds otimizado
+- Atualizado package.json para usar comandos do Turborepo
+- Configurado cache e dependências entre pacotes
+- Atualizado docker-compose.yml com estrutura de monorepo
+- Atualizado docker-compose.dev.yml com novas portas
+- Atualizado nginx.conf para usar portas corretas
+- Atualizado .env.example com novas configurações
+- Atualizado vite.config.ts (porta 3000)
+- Atualizado env.ts do backend (porta 3001)
+- Atualizado README.md com documentação do Turborepo
+
+Benefícios:
+- Builds mais rápidos com cache inteligente
+- Melhor gerenciamento de dependências
+- Pipeline de CI/CD otimizado
+- Padronização de portas (3000/3001)
+- Docker completamente isolado
+---
+ README.md                          |  41 +++++--
+ docker-compose.dev.yml             |  10 +-
+ docker-compose.yml                 | 167 +++++++++++++++--------------
+ docker/nginx/nginx.conf            |   4 +-
+ package-lock.json                  | 105 +++++++++++++++++-
+ package.json                       |  33 +++---
+ packages/backend/.env.example      |   6 +-
+ packages/backend/src/config/env.ts |   4 +-
+ packages/frontend/vite.config.ts   |   2 +-
+ turbo.json                         |  29 +++++
+ 10 files changed, 275 insertions(+), 126 deletions(-)
+ create mode 100644 turbo.json
+
+diff --git a/README.md b/README.md
+index aa37371..1702a0a 100644
+--- a/README.md
++++ b/README.md
+@@ -44,27 +44,37 @@ O Fuse Checkar2 é uma aplicação full-stack construída em arquitetura monorep
+ - **Express Rate Limit** para proteção contra abuso
+ 
+ ### Infraestrutura
+-- **Docker** + **Docker Compose**
++- **Turborepo** - Build system e cache inteligente
++- **Docker** + **Docker Compose** - Containerização
+ - **Nginx** como reverse proxy
+ - **PostgreSQL 15** para banco de dados
+ - **Multi-stage builds** para otimização
+ 
+ ## 🏗 Arquitetura
+ 
++**Monorepo gerenciado por Turborepo** para builds otimizados e cache compartilhado entre pacotes.
++
+ ```
+ fuse-checkar2/
+ ├── packages/
+-│   ├── frontend/          # Aplicação React
+-│   ├── backend/           # API Node.js + Express
++│   ├── frontend/          # Aplicação React (porta 3000)
++│   ├── backend/           # API Node.js + Express (porta 3001)
+ │   └── shared/            # Tipos e utils compartilhados
+ ├── docker/                # Configurações Docker
+ │   ├── nginx/             # Config Nginx
+ │   └── frontend/          # Docker frontend
++├── turbo.json             # Configuração Turborepo
+ ├── docker-compose.yml     # Compose produção
+ ├── docker-compose.dev.yml # Compose desenvolvimento
+ └── docs/                  # Documentação adicional
+ ```
+ 
++**Portas:**
++- Frontend: `3000` (dev) / `80` (produção via nginx)
++- Backend API: `3001` (interno)
++- PostgreSQL: `5432`
++- Nginx Proxy: `80`
++
+ ### Pacotes
+ 
+ #### `@fuse-checkar2/frontend`
+@@ -163,7 +173,21 @@ cd ../..
+ 
+ ## 💻 Desenvolvimento
+ 
+-### Opção 1: Ambiente Local
++### Opção 1: Turborepo (Recomendado)
++
++```bash
++# Rodar todos os pacotes em modo dev
++npm run dev
++
++# Ou rodar apenas um pacote específico
++npm run dev:frontend  # Frontend na porta 3000
++npm run dev:backend   # Backend na porta 3001
++```
++
++O frontend estará disponível em `http://localhost:3000`
++A API estará disponível em `http://localhost:3001`
++
++### Opção 2: Ambiente Local Manual
+ 
+ ```bash
+ # Terminal 1 - Backend
+@@ -175,17 +199,14 @@ cd packages/frontend
+ npm run dev
+ ```
+ 
+-O frontend estará disponível em `http://localhost:5173`
+-A API estará disponível em `http://localhost:3005`
+-
+-### Opção 2: Docker Compose (Dev)
++### Opção 3: Docker Compose (Dev)
+ 
+ ```bash
+ docker-compose -f docker-compose.dev.yml up
+ ```
+ 
+-- Frontend: `http://localhost:5173`
+-- Backend: `http://localhost:3005`
++- Frontend: `http://localhost:3000`
++- Backend: `http://localhost:3001`
+ - PostgreSQL: `localhost:5432`
+ 
+ **Recursos do modo dev:**
+diff --git a/docker-compose.dev.yml b/docker-compose.dev.yml
+index 16de2eb..c160fec 100644
+--- a/docker-compose.dev.yml
++++ b/docker-compose.dev.yml
+@@ -28,12 +28,12 @@ services:
+       DATABASE_URL: postgresql://fusecheckar:fusecheckar_dev@postgres:5432/fusecheckar2_dev
+       JWT_SECRET: dev-jwt-secret-change-in-production
+       JWT_REFRESH_SECRET: dev-refresh-secret-change-in-production
+-      PORT: 3005
+-      CORS_ORIGINS: http://localhost:8080,http://localhost:5173
+-      FRONTEND_URL: http://localhost:8080
++      PORT: 3001
++      CORS_ORIGINS: http://localhost:3000
++      FRONTEND_URL: http://localhost:3000
+       LOG_LEVEL: debug
+     ports:
+-      - "3005:3005"
++      - "3001:3001"
+     depends_on:
+       - postgres
+     volumes:
+@@ -54,7 +54,7 @@ services:
+     environment:
+       NODE_ENV: development
+     ports:
+-      - "8080:8080"
++      - "3000:3000"
+     volumes:
+       - ./packages/frontend:/app
+       - /app/node_modules
+diff --git a/docker-compose.yml b/docker-compose.yml
+index 1321b6c..b1df992 100644
+--- a/docker-compose.yml
++++ b/docker-compose.yml
+@@ -1,106 +1,107 @@
++version: '3.9'
++
+ services:
+-  # Aplicação principal Fuse Checkar2
+-  fuse-checkar2:
++  # PostgreSQL Database
++  postgres:
++    image: postgres:15-alpine
++    container_name: fuse-checkar2-postgres
++    restart: unless-stopped
++    environment:
++      POSTGRES_USER: ${DATABASE_USER:-fusecheckar}
++      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-fusecheckar_password}
++      POSTGRES_DB: ${DATABASE_NAME:-fusecheckar2_db}
++    volumes:
++      - postgres_data:/var/lib/postgresql/data
++    networks:
++      - fuse-network
++    healthcheck:
++      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-fusecheckar}"]
++      interval: 10s
++      timeout: 5s
++      retries: 5
++      start_period: 10s
++
++  # Backend API
++  backend:
+     build:
+-      context: .
+-      dockerfile: Dockerfile
+-    container_name: fuse-checkar2-app
++      context: ./packages/backend
++      dockerfile: docker/Dockerfile
++    container_name: fuse-checkar2-backend
+     restart: unless-stopped
+-    
+-    # Variáveis de ambiente
+     environment:
+-      - NODE_ENV=production
+-      - PORT=3005
+-      - FRONTEND_URL=http://31.97.85.98
+-      
+-    # Mapeamento de porta
++      NODE_ENV: production
++      PORT: 3001
++      DATABASE_URL: postgresql://${DATABASE_USER:-fusecheckar}:${DATABASE_PASSWORD:-fusecheckar_password}@postgres:5432/${DATABASE_NAME:-fusecheckar2_db}
++      JWT_SECRET: ${JWT_SECRET:-change-this-in-production}
++      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-this-in-production}
++      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
++      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
++      LOG_LEVEL: ${LOG_LEVEL:-info}
+     ports:
+-      - "3005:3005"
+-    
+-    # Volumes para persistência de dados
++      - "3001:3001"
++    depends_on:
++      postgres:
++        condition: service_healthy
+     volumes:
+-      - ./logs:/app/logs
+-      - ./data:/app/data  # Para futuros dados da aplicação (uploads, etc.)
+-    
+-    # Health check
++      - ./packages/backend/uploads:/app/uploads
++      - ./logs/backend:/app/logs
++    networks:
++      - fuse-network
+     healthcheck:
+-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3005/health"]
++      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/api/health"]
+       interval: 30s
+       timeout: 10s
+       retries: 3
+       start_period: 40s
+-    
+-    # Recursos limitados para não impactar outras apps
+-    deploy:
+-      resources:
+-        limits:
+-          memory: 512M
+-          cpus: '0.5'
+-        reservations:
+-          memory: 256M
+-          cpus: '0.25'
+-    
+-    # Rede isolada
++
++  # Frontend
++  frontend:
++    build:
++      context: ./packages/frontend
++      dockerfile: ../../docker/frontend/Dockerfile
++    container_name: fuse-checkar2-frontend
++    restart: unless-stopped
++    environment:
++      NODE_ENV: production
++    ports:
++      - "3000:80"
++    depends_on:
++      - backend
+     networks:
+-      - fuse-checkar2-network
+-    
+-    # Labels para organização
+-    labels:
+-      - "com.fuse-checkar2.description=Fuse Checkar2 - Sistema de Revisões Automotivas"
+-      - "com.fuse-checkar2.version=1.0.0"
+-      - "com.fuse-checkar2.port=3005"
++      - fuse-network
++    healthcheck:
++      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
++      interval: 30s
++      timeout: 10s
++      retries: 3
++      start_period: 20s
+ 
+-  # Nginx reverse proxy (opcional - apenas se quiser usar nginx dentro do container)
++  # Nginx Reverse Proxy
+   nginx:
+     image: nginx:alpine
+     container_name: fuse-checkar2-nginx
+     restart: unless-stopped
+-    
+-    # Mapear apenas se quiser nginx separado (descomente as linhas abaixo)
+-    # ports:
+-    #   - "8005:80"  # Porta externa diferente para evitar conflitos
+-    
++    ports:
++      - "80:80"
+     volumes:
+-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+-      - ./logs:/var/log/nginx
+-    
++      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
++      - ./logs/nginx:/var/log/nginx
+     depends_on:
+-      - fuse-checkar2
+-    
++      - backend
++      - frontend
+     networks:
+-      - fuse-checkar2-network
+-    
+-    # Recursos limitados
+-    deploy:
+-      resources:
+-        limits:
+-          memory: 128M
+-          cpus: '0.1'
+-        reservations:
+-          memory: 64M
+-          cpus: '0.05'
+-    
+-    profiles:
+-      - nginx  # Ativar apenas se necessário: docker-compose --profile nginx up
+-
+-# Rede isolada para a aplicação
+-networks:
+-  fuse-checkar2-network:
+-    driver: bridge
+-    name: fuse-checkar2-net
++      - fuse-network
++    healthcheck:
++      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/health"]
++      interval: 30s
++      timeout: 10s
++      retries: 3
++      start_period: 10s
+ 
+-# Volumes nomeados para persistência
+ volumes:
+-  fuse-logs:
+-    driver: local
+-    driver_opts:
+-      type: none
+-      o: bind
+-      device: ./logs
+-  
+-  fuse-data:
++  postgres_data:
+     driver: local
+-    driver_opts:
+-      type: none
+-      o: bind
+-      device: ./data
+\ No newline at end of file
++
++networks:
++  fuse-network:
++    driver: bridge
+diff --git a/docker/nginx/nginx.conf b/docker/nginx/nginx.conf
+index fe65b00..ea97a7d 100644
+--- a/docker/nginx/nginx.conf
++++ b/docker/nginx/nginx.conf
+@@ -58,12 +58,12 @@ http {
+ 
+     # Upstream servers
+     upstream frontend {
+-        server frontend:8080;
++        server frontend:80;
+         keepalive 32;
+     }
+ 
+     upstream backend {
+-        server backend:3005;
++        server backend:3001;
+         keepalive 32;
+     }
+ 
+diff --git a/package-lock.json b/package-lock.json
+index 84ac192..997a122 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -12,7 +12,8 @@
+       ],
+       "devDependencies": {
+         "concurrently": "^8.2.2",
+-        "prettier": "^3.1.0"
++        "prettier": "^3.1.0",
++        "turbo": "^2.6.1"
+       },
+       "engines": {
+         "node": ">=18.0.0",
+@@ -9042,6 +9043,108 @@
+         "fsevents": "~2.3.3"
+       }
+     },
++    "node_modules/turbo": {
++      "version": "2.6.1",
++      "resolved": "https://registry.npmjs.org/turbo/-/turbo-2.6.1.tgz",
++      "integrity": "sha512-qBwXXuDT3rA53kbNafGbT5r++BrhRgx3sAo0cHoDAeG9g1ItTmUMgltz3Hy7Hazy1ODqNpR+C7QwqL6DYB52yA==",
++      "dev": true,
++      "license": "MIT",
++      "bin": {
++        "turbo": "bin/turbo"
++      },
++      "optionalDependencies": {
++        "turbo-darwin-64": "2.6.1",
++        "turbo-darwin-arm64": "2.6.1",
++        "turbo-linux-64": "2.6.1",
++        "turbo-linux-arm64": "2.6.1",
++        "turbo-windows-64": "2.6.1",
++        "turbo-windows-arm64": "2.6.1"
++      }
++    },
++    "node_modules/turbo-darwin-64": {
++      "version": "2.6.1",
++      "resolved": "https://registry.npmjs.org/turbo-darwin-64/-/turbo-darwin-64-2.6.1.tgz",
++      "integrity": "sha512-Dm0HwhyZF4J0uLqkhUyCVJvKM9Rw7M03v3J9A7drHDQW0qAbIGBrUijQ8g4Q9Cciw/BXRRd8Uzkc3oue+qn+ZQ==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ]
++    },
++    "node_modules/turbo-darwin-arm64": {
++      "version": "2.6.1",
++      "resolved": "https://registry.npmjs.org/turbo-darwin-arm64/-/turbo-darwin-arm64-2.6.1.tgz",
++      "integrity": "sha512-U0PIPTPyxdLsrC3jN7jaJUwgzX5sVUBsKLO7+6AL+OASaa1NbT1pPdiZoTkblBAALLP76FM0LlnsVQOnmjYhyw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ]
++    },
++    "node_modules/turbo-linux-64": {
++      "version": "2.6.1",
++      "resolved": "https://registry.npmjs.org/turbo-linux-64/-/turbo-linux-64-2.6.1.tgz",
++      "integrity": "sha512-eM1uLWgzv89bxlK29qwQEr9xYWBhmO/EGiH22UGfq+uXr+QW1OvNKKMogSN65Ry8lElMH4LZh0aX2DEc7eC0Mw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ]
++    },
++    "node_modules/turbo-linux-arm64": {
++      "version": "2.6.1",
++      "resolved": "https://registry.npmjs.org/turbo-linux-arm64/-/turbo-linux-arm64-2.6.1.tgz",
++      "integrity": "sha512-MFFh7AxAQAycXKuZDrbeutfWM5Ep0CEZ9u7zs4Hn2FvOViTCzIfEhmuJou3/a5+q5VX1zTxQrKGy+4Lf5cdpsA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ]
++    },
++    "node_modules/turbo-windows-64": {
++      "version": "2.6.1",
++      "resolved": "https://registry.npmjs.org/turbo-windows-64/-/turbo-windows-64-2.6.1.tgz",
++      "integrity": "sha512-buq7/VAN7KOjMYi4tSZT5m+jpqyhbRU2EUTTvp6V0Ii8dAkY2tAAjQN1q5q2ByflYWKecbQNTqxmVploE0LVwQ==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ]
++    },
++    "node_modules/turbo-windows-arm64": {
++      "version": "2.6.1",
++      "resolved": "https://registry.npmjs.org/turbo-windows-arm64/-/turbo-windows-arm64-2.6.1.tgz",
++      "integrity": "sha512-7w+AD5vJp3R+FB0YOj1YJcNcOOvBior7bcHTodqp90S3x3bLgpr7tE6xOea1e8JkP7GK6ciKVUpQvV7psiwU5Q==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ]
++    },
+     "node_modules/type-check": {
+       "version": "0.4.0",
+       "resolved": "https://registry.npmjs.org/type-check/-/type-check-0.4.0.tgz",
+diff --git a/package.json b/package.json
+index 65d840f..deca0ab 100644
+--- a/package.json
++++ b/package.json
+@@ -8,29 +8,24 @@
+     "packages/*"
+   ],
+   "scripts": {
+-    "dev": "npm run dev --workspace=@fuse-checkar2/frontend",
+-    "dev:frontend": "npm run dev --workspace=@fuse-checkar2/frontend",
+-    "dev:backend": "npm run dev --workspace=@fuse-checkar2/backend",
+-    "dev:all": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+-
+-    "build": "npm run build --workspaces --if-present",
+-    "build:frontend": "npm run build --workspace=@fuse-checkar2/frontend",
+-    "build:backend": "npm run build --workspace=@fuse-checkar2/backend",
+-    "build:shared": "npm run build --workspace=@fuse-checkar2/shared",
+-
+-    "lint": "npm run lint --workspaces --if-present",
+-    "lint:fix": "npm run lint:fix --workspaces --if-present",
+-
+-    "type-check": "npm run type-check --workspaces --if-present",
+-
+-    "clean": "rm -rf packages/*/node_modules packages/*/dist node_modules",
+-    "clean:build": "rm -rf packages/*/dist",
+-
++    "dev": "turbo run dev",
++    "dev:frontend": "turbo run dev --filter=@fuse-checkar2/frontend",
++    "dev:backend": "turbo run dev --filter=@fuse-checkar2/backend",
++    "build": "turbo run build",
++    "build:frontend": "turbo run build --filter=@fuse-checkar2/frontend",
++    "build:backend": "turbo run build --filter=@fuse-checkar2/backend",
++    "build:shared": "turbo run build --filter=@fuse-checkar2/shared",
++    "lint": "turbo run lint",
++    "lint:fix": "turbo run lint:fix",
++    "type-check": "turbo run type-check",
++    "clean": "rm -rf packages/*/node_modules packages/*/dist node_modules .turbo",
++    "clean:build": "rm -rf packages/*/dist .turbo",
+     "preview": "npm run preview --workspace=@fuse-checkar2/frontend"
+   },
+   "devDependencies": {
+     "concurrently": "^8.2.2",
+-    "prettier": "^3.1.0"
++    "prettier": "^3.1.0",
++    "turbo": "^2.6.1"
+   },
+   "engines": {
+     "node": ">=18.0.0",
+diff --git a/packages/backend/.env.example b/packages/backend/.env.example
+index 9612e4e..987ad83 100644
+--- a/packages/backend/.env.example
++++ b/packages/backend/.env.example
+@@ -1,6 +1,6 @@
+ # Application
+ NODE_ENV=development
+-PORT=3005
++PORT=3001
+ APP_NAME="Fuse Checkar2"
+ APP_URL=http://localhost
+ 
+@@ -14,8 +14,8 @@ JWT_EXPIRES_IN=1h
+ JWT_REFRESH_EXPIRES_IN=7d
+ 
+ # CORS
+-CORS_ORIGINS=http://localhost:8080,http://localhost:5173
+-FRONTEND_URL=http://localhost:8080
++CORS_ORIGINS=http://localhost:3000
++FRONTEND_URL=http://localhost:3000
+ 
+ # Uploads
+ UPLOAD_MAX_SIZE=10485760
+diff --git a/packages/backend/src/config/env.ts b/packages/backend/src/config/env.ts
+index ee37439..3553968 100644
+--- a/packages/backend/src/config/env.ts
++++ b/packages/backend/src/config/env.ts
+@@ -40,7 +40,7 @@ interface EnvConfig {
+ 
+ const env: EnvConfig = {
+   nodeEnv: process.env.NODE_ENV || 'development',
+-  port: parseInt(process.env.PORT || '3005', 10),
++  port: parseInt(process.env.PORT || '3001', 10),
+   appName: process.env.APP_NAME || 'Fuse Checkar2',
+   appUrl: process.env.APP_URL || 'http://localhost',
+ 
+@@ -52,7 +52,7 @@ const env: EnvConfig = {
+   jwtRefreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
+ 
+   corsOrigins: (process.env.CORS_ORIGINS || '').split(',').filter(Boolean),
+-  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:8080',
++  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
+ 
+   uploadMaxSize: parseInt(process.env.UPLOAD_MAX_SIZE || '10485760', 10),
+   uploadAllowedTypes: (process.env.UPLOAD_ALLOWED_TYPES || '').split(','),
+diff --git a/packages/frontend/vite.config.ts b/packages/frontend/vite.config.ts
+index 33744c7..6dc4e91 100644
+--- a/packages/frontend/vite.config.ts
++++ b/packages/frontend/vite.config.ts
+@@ -7,7 +7,7 @@ import { componentTagger } from "lovable-tagger";
+ export default defineConfig(({ mode }) => ({
+   server: {
+     host: "::",
+-    port: 8080,
++    port: 3000,
+   },
+   plugins: [
+     react(),
+diff --git a/turbo.json b/turbo.json
+new file mode 100644
+index 0000000..f967bcf
+--- /dev/null
++++ b/turbo.json
+@@ -0,0 +1,29 @@
++{
++  "$schema": "https://turbo.build/schema.json",
++  "globalDependencies": ["**/.env.*local"],
++  "pipeline": {
++    "build": {
++      "dependsOn": ["^build"],
++      "outputs": ["dist/**", ".next/**", "!.next/cache/**", "build/**"]
++    },
++    "lint": {
++      "dependsOn": ["^build"]
++    },
++    "dev": {
++      "cache": false,
++      "persistent": true
++    },
++    "type-check": {
++      "dependsOn": ["^build"]
++    },
++    "db:generate": {
++      "cache": false
++    },
++    "db:migrate": {
++      "cache": false
++    },
++    "db:seed": {
++      "cache": false
++    }
++  }
++}
+-- 
+2.43.0
+
