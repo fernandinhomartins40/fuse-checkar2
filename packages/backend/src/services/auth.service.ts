@@ -96,7 +96,7 @@ class AuthService {
     const hashedPassword = await hashPassword(data.senha);
 
     // Criar usuário e cliente em uma transação
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: any) => {
       // Criar usuário
       const user = await tx.user.create({
         data: {

@@ -15,7 +15,7 @@ export const useClientes = () => {
 };
 
 // Hook para buscar um cliente específico
-export const useCliente = (id: string) => {
+export const useCliente = (id: number) => {
   return useQuery({
     queryKey: ['cliente', id],
     queryFn: async () => {
@@ -46,9 +46,9 @@ export const useCreateCliente = () => {
 // Hook para atualizar um cliente
 export const useUpdateCliente = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async ({ id, dados }: { id: string; dados: Partial<Cliente> }) => {
+    mutationFn: async ({ id, dados }: { id: number; dados: Partial<Cliente> }) => {
       const response = await apiClientes.atualizar(id, dados);
       return response.data as Cliente;
     },
@@ -63,9 +63,9 @@ export const useUpdateCliente = () => {
 // Hook para remover um cliente
 export const useDeleteCliente = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async (id: number) => {
       await apiClientes.remover(id);
       return id;
     },
