@@ -1,106 +1,107 @@
+version: '3.9'
+
 services:
-  # Aplicação principal Fuse Checkar2
-  fuse-checkar2:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: fuse-checkar2-app
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: fuse-checkar2-postgres
     restart: unless-stopped
-    
-    # Variáveis de ambiente
     environment:
-      - NODE_ENV=production
-      - PORT=3005
-      - FRONTEND_URL=http://31.97.85.98
-      
-    # Mapeamento de porta
-    ports:
-      - "3005:3005"
-    
-    # Volumes para persistência de dados
+      POSTGRES_USER: ${DATABASE_USER:-fusecheckar}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-fusecheckar_password}
+      POSTGRES_DB: ${DATABASE_NAME:-fusecheckar2_db}
     volumes:
-      - ./logs:/app/logs
-      - ./data:/app/data  # Para futuros dados da aplicação (uploads, etc.)
-    
-    # Health check
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - fuse-network
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3005/health"]
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-fusecheckar}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # Backend API
+  backend:
+    build:
+      context: ./packages/backend
+      dockerfile: docker/Dockerfile
+    container_name: fuse-checkar2-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://${DATABASE_USER:-fusecheckar}:${DATABASE_PASSWORD:-fusecheckar_password}@postgres:5432/${DATABASE_NAME:-fusecheckar2_db}
+      JWT_SECRET: ${JWT_SECRET:-change-this-in-production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-this-in-production}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./packages/backend/uploads:/app/uploads
+      - ./logs/backend:/app/logs
+    networks:
+      - fuse-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-    
-    # Recursos limitados para não impactar outras apps
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpus: '0.5'
-        reservations:
-          memory: 256M
-          cpus: '0.25'
-    
-    # Rede isolada
-    networks:
-      - fuse-checkar2-network
-    
-    # Labels para organização
-    labels:
-      - "com.fuse-checkar2.description=Fuse Checkar2 - Sistema de Revisões Automotivas"
-      - "com.fuse-checkar2.version=1.0.0"
-      - "com.fuse-checkar2.port=3005"
 
-  # Nginx reverse proxy (opcional - apenas se quiser usar nginx dentro do container)
+  # Frontend
+  frontend:
+    build:
+      context: ./packages/frontend
+      dockerfile: ../../docker/frontend/Dockerfile
+    container_name: fuse-checkar2-frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - fuse-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  # Nginx Reverse Proxy
   nginx:
     image: nginx:alpine
     container_name: fuse-checkar2-nginx
     restart: unless-stopped
-    
-    # Mapear apenas se quiser nginx separado (descomente as linhas abaixo)
-    # ports:
-    #   - "8005:80"  # Porta externa diferente para evitar conflitos
-    
+    ports:
+      - "80:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./logs:/var/log/nginx
-    
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./logs/nginx:/var/log/nginx
     depends_on:
-      - fuse-checkar2
-    
+      - backend
+      - frontend
     networks:
-      - fuse-checkar2-network
-    
-    # Recursos limitados
-    deploy:
-      resources:
-        limits:
-          memory: 128M
-          cpus: '0.1'
-        reservations:
-          memory: 64M
-          cpus: '0.05'
-    
-    profiles:
-      - nginx  # Ativar apenas se necessário: docker-compose --profile nginx up
+      - fuse-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
-# Rede isolada para a aplicação
-networks:
-  fuse-checkar2-network:
-    driver: bridge
-    name: fuse-checkar2-net
-
-# Volumes nomeados para persistência
 volumes:
-  fuse-logs:
+  postgres_data:
     driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./logs
-  
-  fuse-data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./data
+
+networks:
+  fuse-network:
+    driver: bridge

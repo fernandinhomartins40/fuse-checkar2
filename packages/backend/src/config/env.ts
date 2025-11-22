@@ -40,7 +40,7 @@ interface EnvConfig {
 
 const env: EnvConfig = {
   nodeEnv: process.env.NODE_ENV || 'development',
-  port: parseInt(process.env.PORT || '3005', 10),
+  port: parseInt(process.env.PORT || '3001', 10),
   appName: process.env.APP_NAME || 'Fuse Checkar2',
   appUrl: process.env.APP_URL || 'http://localhost',
 
@@ -52,7 +52,7 @@ const env: EnvConfig = {
   jwtRefreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
 
   corsOrigins: (process.env.CORS_ORIGINS || '').split(',').filter(Boolean),
-  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:8080',
+  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
 
   uploadMaxSize: parseInt(process.env.UPLOAD_MAX_SIZE || '10485760', 10),
   uploadAllowedTypes: (process.env.UPLOAD_ALLOWED_TYPES || '').split(','),
